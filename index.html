@@ -58,7 +58,7 @@ a { color: inherit; }
 .mobile-menu-link:hover { background:rgba(201,168,76,0.04); color:#C9A84C; }
 
 /* Hero */
-.rp-hero { min-height:100vh; padding-top:72px; background:#0a0805; display:grid; grid-template-columns:1fr 36% 1fr; position:relative; overflow:hidden; }
+.rp-hero { height:100vh; max-height:100vh; padding-top:72px; background:#0a0805; display:grid; grid-template-columns:1fr 36% 1fr; position:relative; overflow:hidden; }
 .rp-hero-left { padding:88px 40px 72px 64px; display:flex; flex-direction:column; justify-content:space-between; position:relative; z-index:2; }
 .rp-hero-right { padding:88px 64px 72px 40px; display:flex; flex-direction:column; justify-content:space-around; position:relative; z-index:2; }
 
@@ -82,9 +82,11 @@ a { color: inherit; }
 .plan-card.inactive { background:rgba(255,255,255,0.018); border:1px solid rgba(255,255,255,0.07); }
 
 /* Ritual accordion */
-.ritual-item { padding:44px 48px; cursor:pointer; transition:background 0.35s ease; display:flex; flex-direction:column; justify-content:center; }
+.ritual-item { padding:44px 48px; cursor:pointer; transition:background 0.35s ease, border-color 0.35s ease; display:flex; flex-direction:column; justify-content:center; position:relative; }
 .ritual-item.active { background:rgba(201,168,76,0.06); border-left:3px solid #C9A84C; flex:2; }
+.ritual-item.active::before { content:''; position:absolute; top:0; left:0; width:80px; height:100%; background:linear-gradient(to right, rgba(201,168,76,0.08), transparent); pointer-events:none; }
 .ritual-item.inactive { background:transparent; border-left:3px solid transparent; flex:1; }
+.ritual-item.inactive:hover { background:rgba(201,168,76,0.025); }
 .ritual-body { overflow:hidden; transition:max-height 0.55s ease, opacity 0.4s ease; padding-left:40px; }
 .ritual-item.active .ritual-body { max-height:220px; opacity:1; }
 .ritual-item.inactive .ritual-body { max-height:0; opacity:0; }
@@ -129,6 +131,7 @@ a { color: inherit; }
   .rp-pyr-info > div:not(:last-child) { border-right:none !important; border-bottom:1px solid rgba(201,168,76,0.1) !important; padding-bottom:32px !important; }
   .rp-rit-split { grid-template-columns:1fr !important; }
   .rp-rit-split > div:first-child { min-height:300px; }
+  .rp-rit-divider { display:none !important; }
   .rp-4col { grid-template-columns:1fr 1fr !important; gap:36px !important; }
   .rp-footer-brand { grid-column:1 / -1 !important; }
   .rp-footer-bottom { flex-direction:column !important; gap:10px !important; align-items:flex-start !important; }
@@ -213,7 +216,6 @@ a { color: inherit; }
       <a href="#journey" class="cartouche-btn lg"><span>Get a Ticket</span><span class="btn-arrow">&rarr;</span></a>
     </div>
     <div>
-      <p class="rp-hero-bottom-text" style="font-family:'EB Garamond',serif; font-size:15px; color:rgba(240,230,208,0.42); line-height:1.85; margin:0 0 28px 0; max-width:310px;">We guide explorers through the timeless<br>wonders of the pharaohs, from the sacred<br>banks of the Nile to the golden sands<br>of the endless desert.</p>
       <div style="display:flex; gap:22px; align-items:center;">
         <a href="#" class="social-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
         <a href="#" class="social-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
@@ -376,9 +378,9 @@ a { color: inherit; }
     <p style="font-family:'EB Garamond',serif; font-size:18px; color:rgba(240,230,208,0.5); max-width:360px; text-align:right; line-height:1.75; margin:0;">For millennia, fire illuminated the sacred chambers &mdash; torchlight guiding priests through midnight ceremonies of rebirth.</p>
   </div>
 
-  <div class="rp-rit-split" style="display:grid; grid-template-columns:55% 45%; min-height:640px; position:relative; z-index:2;">
+  <div class="rp-rit-split" style="display:grid; grid-template-columns:50% auto 1fr; min-height:640px; position:relative; z-index:2;">
     <!-- Video -->
-    <div style="position:relative; overflow:hidden;">
+    <div style="position:relative; overflow:hidden; border-radius:4px;">
       <svg viewBox="0 0 560 88" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="position:absolute; top:0; left:0; width:100%; height:88px; z-index:4; pointer-events:none;">
         <path d="M0,0 L0,88 L48,88 L48,52 Q64,14 80,52 L80,88 L480,88 L480,52 Q496,14 512,52 L512,88 L560,88 L560,0 Z" fill="#060402"/>
         <line x1="80" y1="0" x2="80" y2="88" stroke="#C9A84C" stroke-width="1" opacity="0.45"/>
@@ -397,8 +399,16 @@ a { color: inherit; }
       </video>
     </div>
 
+    <!-- Divider column -->
+    <div class="rp-rit-divider" style="display:flex; flex-direction:column; align-items:center; padding:0 28px; position:relative;">
+      <div style="width:1px; flex:1; background:linear-gradient(to bottom, transparent, rgba(201,168,76,0.3) 20%, rgba(201,168,76,0.3) 80%, transparent);"></div>
+      <div style="position:absolute; top:50%; transform:translateY(-50%); width:28px; height:28px; border:1px solid rgba(201,168,76,0.35); transform:translateY(-50%) rotate(45deg); background:#060402;"></div>
+      <div style="position:absolute; top:50%; transform:translateY(-50%); width:8px; height:8px; background:#C9A84C; border-radius:50; transform:translateY(-50%) rotate(45deg);"></div>
+    </div>
+
     <!-- Accordion -->
-    <div id="ritualAccordion" style="display:flex; flex-direction:column; background:#060402; border-left:1px solid rgba(201,168,76,0.1);">
+    <div id="ritualAccordion" style="display:flex; flex-direction:column; background:linear-gradient(180deg,rgba(14,11,6,0.9) 0%,#060402 100%); border:1px solid rgba(201,168,76,0.08); position:relative; overflow:hidden;">
+      <div style="position:absolute; inset:0; background:repeating-linear-gradient(0deg,rgba(201,168,76,0.015) 0px,transparent 1px,transparent 40px); pointer-events:none;"></div>
       <div class="ritual-item active" data-index="0">
         <div style="display:flex; align-items:flex-start; gap:22px;">
           <div style="flex-shrink:0; width:18px; margin-top:2px;">
@@ -424,7 +434,7 @@ a { color: inherit; }
           </div>
         </div>
       </div>
-      <div style="height:1px; background:rgba(201,168,76,0.08); margin:0 48px;"></div>
+      <div style="height:1px; background:linear-gradient(to right, rgba(201,168,76,0.25), rgba(201,168,76,0.08) 30%, rgba(201,168,76,0.08) 70%, rgba(201,168,76,0.03)); margin:0 36px 0 48px;"></div>
       <div class="ritual-item inactive" data-index="1">
         <div style="display:flex; align-items:flex-start; gap:22px;">
           <div style="flex-shrink:0; width:18px; margin-top:2px;">
@@ -450,7 +460,7 @@ a { color: inherit; }
           </div>
         </div>
       </div>
-      <div style="height:1px; background:rgba(201,168,76,0.08); margin:0 48px;"></div>
+      <div style="height:1px; background:linear-gradient(to right, rgba(201,168,76,0.25), rgba(201,168,76,0.08) 30%, rgba(201,168,76,0.08) 70%, rgba(201,168,76,0.03)); margin:0 36px 0 48px;"></div>
       <div class="ritual-item inactive" data-index="2">
         <div style="display:flex; align-items:flex-start; gap:22px;">
           <div style="flex-shrink:0; width:18px; margin-top:2px;">
