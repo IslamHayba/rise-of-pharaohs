@@ -29,26 +29,21 @@ a { color: inherit; }
 .rp-signin { font-family:'EB Garamond',serif; font-size:16px; color:rgba(240,230,208,0.55); text-decoration:none; letter-spacing:0.04em; transition:color 0.2s; }
 .rp-signin:hover { color:#f0e6d0; }
 
-/* Papyrus buttons */
-.papyrus-btn { display:inline-flex; align-items:stretch; text-decoration:none; transition:filter 0.25s, transform 0.22s; }
-.papyrus-btn:hover { transform:translateY(-2px); filter:brightness(1.07); }
-.papyrus-end-l { width:10px; background:linear-gradient(to right,#3E2006,#7A5228,#8D6535,#6B4820); border-radius:50%; flex-shrink:0; }
-.papyrus-end-r { width:10px; background:linear-gradient(to left,#3E2006,#7A5228,#8D6535,#6B4820); border-radius:50%; flex-shrink:0; }
-.papyrus-mid { padding:11px 24px; background:repeating-linear-gradient(180deg,rgba(120,76,16,0.22) 0px,rgba(120,76,16,0.22) 1px,transparent 1px,transparent 4px,rgba(100,62,10,0.14) 4px,rgba(100,62,10,0.14) 5px,transparent 5px,transparent 9px),linear-gradient(170deg,#E2C48C 0%,#CEAA60 38%,#DEBB7E 62%,#C49A4A 100%); white-space:nowrap; }
-.papyrus-mid span { font-family:'EB Garamond',serif; font-size:13px; font-weight:600; color:#2C1505; letter-spacing:0.14em; text-transform:uppercase; }
+/* Cartouche buttons */
+.cartouche-btn { display:inline-flex; align-items:center; justify-content:center; gap:14px; padding:13px 36px; background:linear-gradient(180deg,#1a1510 0%,#0e0b07 100%); border:2px solid #C9A84C; border-radius:50px; text-decoration:none; position:relative; box-shadow:0 0 18px rgba(201,168,76,0.15), inset 0 1px 0 rgba(201,168,76,0.1); transition:all 0.3s; }
+.cartouche-btn:hover { transform:translateY(-2px); box-shadow:0 0 28px rgba(201,168,76,0.3), inset 0 1px 0 rgba(201,168,76,0.15); border-color:#d4b65c; }
+.cartouche-btn span { font-family:'Playfair Display',serif; font-size:13px; font-weight:700; color:#C9A84C; letter-spacing:0.18em; text-transform:uppercase; white-space:nowrap; }
+.cartouche-btn .btn-arrow { font-family:'EB Garamond',serif; font-size:18px; color:#C9A84C; flex-shrink:0; }
 
-.papyrus-btn.lg .papyrus-end-l,
-.papyrus-btn.lg .papyrus-end-r { width:14px; background:linear-gradient(to right,#3E2006,#7A5228,#9A7040,#7A5228,#3E2006); }
-.papyrus-btn.lg .papyrus-end-r { background:linear-gradient(to left,#3E2006,#7A5228,#9A7040,#7A5228,#3E2006); }
-.papyrus-btn.lg .papyrus-mid { padding:16px 36px; }
-.papyrus-btn.lg .papyrus-mid span { font-size:17px; }
-.papyrus-btn.lg:hover { transform:translateY(-3px); }
+.cartouche-btn.lg { padding:16px 44px; border-width:2px; }
+.cartouche-btn.lg span { font-size:16px; }
+.cartouche-btn.lg:hover { transform:translateY(-3px); box-shadow:0 0 36px rgba(201,168,76,0.35), inset 0 1px 0 rgba(201,168,76,0.2); }
 
-.papyrus-btn.explorer .papyrus-end-l,
-.papyrus-btn.explorer .papyrus-end-r { width:12px; background:linear-gradient(to right,#3E2006,#7A5228,#9A7040,#7A5228,#3E2006); }
-.papyrus-btn.explorer .papyrus-end-r { background:linear-gradient(to left,#3E2006,#7A5228,#9A7040,#7A5228,#3E2006); }
-.papyrus-btn.explorer .papyrus-mid { padding:14px 36px; background:repeating-linear-gradient(180deg,rgba(120,76,16,0.22) 0px,rgba(120,76,16,0.22) 1px,transparent 1px,transparent 4px,rgba(100,62,10,0.14) 4px,rgba(100,62,10,0.14) 5px,transparent 5px,transparent 9px),linear-gradient(170deg,#EED4A0 0%,#DABB70 38%,#ECCF8C 62%,#D2AA58 100%); }
-.papyrus-btn.explorer .papyrus-mid span { font-size:14px; font-weight:700; color:#1E0E02; letter-spacing:0.16em; }
+.cartouche-btn.primary { background:linear-gradient(180deg,#1e1812 0%,#120e08 100%); border-color:#d4b65c; box-shadow:0 0 24px rgba(201,168,76,0.22), inset 0 1px 0 rgba(201,168,76,0.15); }
+.cartouche-btn.primary:hover { border-color:#e0c56a; box-shadow:0 0 36px rgba(201,168,76,0.4), inset 0 1px 0 rgba(201,168,76,0.2); }
+
+.cartouche-btn.sm { padding:10px 28px; }
+.cartouche-btn.sm span { font-size:12px; letter-spacing:0.16em; }
 
 /* Hamburger */
 .rp-hamburger { display:none; cursor:pointer; background:none; border:1px solid rgba(201,168,76,0.35); padding:9px 11px; flex-direction:column; gap:5px; align-items:center; justify-content:center; flex-shrink:0; }
@@ -162,11 +157,7 @@ a { color: inherit; }
   </div>
   <div class="rp-nav-cta" style="display:flex; gap:20px; align-items:center;">
     <a href="#" class="rp-signin">Sign In</a>
-    <a href="#journey" class="papyrus-btn" style="filter:drop-shadow(0 2px 6px rgba(0,0,0,0.55));">
-      <div class="papyrus-end-l"></div>
-      <div class="papyrus-mid"><span>Get a Ticket</span></div>
-      <div class="papyrus-end-r"></div>
-    </a>
+    <a href="#journey" class="cartouche-btn sm"><span>Get a Ticket</span></a>
   </div>
   <button class="rp-hamburger" id="hamburgerBtn">
     <span></span><span></span><span></span>
@@ -191,11 +182,7 @@ a { color: inherit; }
     <a href="#journey" class="mobile-menu-link"><span>Plan a Trip</span><span style="font-family:'Amiri',serif; font-size:15px; color:rgba(201,168,76,0.45); font-weight:400;">خطط لرحلتك</span></a>
   </div>
   <div style="padding:28px 48px; border-top:1px solid rgba(201,168,76,0.1); display:flex; justify-content:center; flex-shrink:0; position:relative; z-index:2;">
-    <a href="#journey" class="papyrus-btn explorer" style="filter:drop-shadow(0 3px 10px rgba(0,0,0,0.6));">
-      <div class="papyrus-end-l"></div>
-      <div class="papyrus-mid"><span>Get a Ticket &rarr;</span></div>
-      <div class="papyrus-end-r"></div>
-    </a>
+    <a href="#journey" class="cartouche-btn primary"><span>Get a Ticket</span><span class="btn-arrow">&rarr;</span></a>
   </div>
 </div>
 
@@ -215,14 +202,7 @@ a { color: inherit; }
       <h1 style="font-family:'Playfair Display',serif; font-size:clamp(68px,7.5vw,118px); font-weight:900; line-height:0.90; color:#f0e6d0; margin:0 0 6px 0; letter-spacing:-0.02em;">DISCOVER<br>ANCIENT PAST<br>UNVEILED</h1>
       <p style="font-family:'Amiri',serif; font-size:16px; color:rgba(201,168,76,0.6); direction:rtl; text-align:right; margin:12px 0 28px 0; font-style:italic; line-height:1;">اكتشف ماضياً قديماً أُزيل عنه الغموض</p>
       <p style="font-family:'EB Garamond',serif; font-size:19px; color:rgba(240,230,208,0.68); line-height:1.65; margin:0 0 36px 0; max-width:380px;">Journey through millennia of buried secrets,<br>where every stone holds a story.</p>
-      <a href="#journey" class="papyrus-btn lg" style="filter:drop-shadow(0 4px 14px rgba(0,0,0,0.7));">
-        <div class="papyrus-end-l"></div>
-        <div class="papyrus-mid" style="display:flex; align-items:center; gap:16px;">
-          <span>Get a Ticket</span>
-          <span style="width:30px; height:30px; border-radius:50%; background:rgba(44,21,5,0.15); border:1px solid rgba(44,21,5,0.3); display:flex; align-items:center; justify-content:center; font-size:16px; color:#2C1505; flex-shrink:0;">&rarr;</span>
-        </div>
-        <div class="papyrus-end-r"></div>
-      </a>
+      <a href="#journey" class="cartouche-btn lg"><span>Get a Ticket</span><span class="btn-arrow">&rarr;</span></a>
     </div>
     <div>
       <p style="font-family:'EB Garamond',serif; font-size:15px; color:rgba(240,230,208,0.42); line-height:1.85; margin:0 0 28px 0; max-width:310px;">We guide explorers through the timeless<br>wonders of the pharaohs, from the sacred<br>banks of the Nile to the golden sands<br>of the endless desert.</p>
@@ -354,7 +334,7 @@ a { color: inherit; }
     <div style="position:absolute; top:0; left:0; right:0; height:100px; background:linear-gradient(to bottom,#0a0805,transparent); z-index:3; pointer-events:none;"></div>
     <div style="position:absolute; bottom:0; left:0; right:0; height:100px; background:linear-gradient(to top,#0a0805,transparent); z-index:3; pointer-events:none;"></div>
     <video autoplay muted loop playsinline style="width:100%; height:480px; object-fit:cover; display:block;">
-      <source src="project/uploads/banner image.mp4" type="video/mp4">
+      <source src="project/uploads/banner%20image.mp4" type="video/mp4">
     </video>
   </div>
   <div class="rp-pyr-info" style="display:grid; grid-template-columns:1fr 1fr 1fr; border-top:1px solid rgba(201,168,76,0.18); padding:56px 0 72px 0;">
@@ -505,11 +485,7 @@ a { color: inherit; }
       <h2 style="font-family:'Playfair Display',serif; font-size:clamp(52px,6vw,88px); font-weight:900; color:#f0e6d0; margin:0; line-height:0.92; letter-spacing:-0.02em;">ARTIFACTS &amp;<br>TREASURES</h2>
       <p style="font-family:'Amiri',serif; font-size:18px; color:rgba(201,168,76,0.6); margin:10px 0 0 0; direction:rtl; text-align:left;">القطع الأثرية والكنوز</p>
     </div>
-    <a href="#" class="papyrus-btn" style="filter:drop-shadow(0 2px 8px rgba(0,0,0,0.5));">
-      <div class="papyrus-end-l"></div>
-      <div class="papyrus-mid" style="padding:15px 32px;"><span style="letter-spacing:0.2em;">VIEW COLLECTION &rarr;</span></div>
-      <div class="papyrus-end-r"></div>
-    </a>
+    <a href="#" class="cartouche-btn"><span>View Collection</span><span class="btn-arrow">&rarr;</span></a>
   </div>
   <div class="rp-3col" style="display:grid; grid-template-columns:repeat(3,1fr); gap:24px;">
     <!-- Tutankhamun -->
@@ -596,11 +572,7 @@ a { color: inherit; }
         <div style="display:flex; align-items:center; gap:14px;"><span style="width:4px; height:4px; background:#C9A84C; border-radius:50%; flex-shrink:0;"></span><span style="font-family:'EB Garamond',serif; font-size:15px; color:rgba(240,230,208,0.62);">Memphis Ancient City</span></div>
       </div>
       <div style="display:flex; justify-content:center;">
-        <a href="#" class="papyrus-btn" style="filter:drop-shadow(0 2px 8px rgba(0,0,0,0.5));">
-          <div class="papyrus-end-l"></div>
-          <div class="papyrus-mid" style="padding:14px 36px;"><span style="font-size:14px; letter-spacing:0.16em;">Select Journey &rarr;</span></div>
-          <div class="papyrus-end-r"></div>
-        </a>
+        <a href="#" class="cartouche-btn"><span>Select Journey</span><span class="btn-arrow">&rarr;</span></a>
       </div>
     </div>
     <!-- Explorer -->
@@ -618,11 +590,7 @@ a { color: inherit; }
         <div style="display:flex; align-items:center; gap:14px;"><span style="width:4px; height:4px; background:#C9A84C; border-radius:50%; flex-shrink:0;"></span><span style="font-family:'EB Garamond',serif; font-size:15px; color:rgba(240,230,208,0.62);">Abu Simbel &amp; Philae Temple</span></div>
       </div>
       <div style="display:flex; justify-content:center;">
-        <a href="#" class="papyrus-btn explorer" style="filter:drop-shadow(0 3px 12px rgba(0,0,0,0.65));">
-          <div class="papyrus-end-l"></div>
-          <div class="papyrus-mid"><span>Get a Ticket &rarr;</span></div>
-          <div class="papyrus-end-r"></div>
-        </a>
+        <a href="#" class="cartouche-btn primary"><span>Get a Ticket</span><span class="btn-arrow">&rarr;</span></a>
       </div>
     </div>
     <!-- Pharaoh -->
@@ -637,11 +605,7 @@ a { color: inherit; }
         <div style="display:flex; align-items:center; gap:14px;"><span style="width:4px; height:4px; background:#C9A84C; border-radius:50%; flex-shrink:0;"></span><span style="font-family:'EB Garamond',serif; font-size:15px; color:rgba(240,230,208,0.62);">Nubian Village Experience</span></div>
       </div>
       <div style="display:flex; justify-content:center;">
-        <a href="#" class="papyrus-btn" style="filter:drop-shadow(0 2px 8px rgba(0,0,0,0.5));">
-          <div class="papyrus-end-l"></div>
-          <div class="papyrus-mid" style="padding:14px 36px;"><span style="font-size:14px; letter-spacing:0.16em;">Select Journey &rarr;</span></div>
-          <div class="papyrus-end-r"></div>
-        </a>
+        <a href="#" class="cartouche-btn"><span>Select Journey</span><span class="btn-arrow">&rarr;</span></a>
       </div>
     </div>
   </div>
