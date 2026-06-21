@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Rise of Pharaohs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700;1,900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: #0a0805; color: #f0e6d0; overflow-x: hidden; scroll-behavior: smooth; font-family: 'EB Garamond', serif; }
+a { color: inherit; }
+
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes ambientGlow {
+  0%,100% { opacity:.25; }
+  50% { opacity:.5; }
+}
+
+/* Nav */
+.rp-nav { position:fixed; top:0; left:0; right:0; z-index:200; height:72px; padding:0 64px; display:flex; align-items:center; justify-content:space-between; background:transparent; box-shadow:none; transition:background 0.5s ease, box-shadow 0.5s ease; }
+.rp-nav.scrolled { background:rgba(10,8,5,0.97); box-shadow:0 1px 0 rgba(201,168,76,0.14); }
+.rp-nav-link { font-family:'EB Garamond',serif; font-size:16px; color:rgba(240,230,208,0.72); text-decoration:none; letter-spacing:0.06em; transition:color 0.2s; }
+.rp-nav-link:hover { color:#C9A84C; }
+.rp-signin { font-family:'EB Garamond',serif; font-size:16px; color:rgba(240,230,208,0.55); text-decoration:none; letter-spacing:0.04em; transition:color 0.2s; }
+.rp-signin:hover { color:#f0e6d0; }
+
+/* Papyrus buttons */
+.papyrus-btn { display:inline-flex; align-items:stretch; text-decoration:none; transition:filter 0.25s, transform 0.22s; }
+.papyrus-btn:hover { transform:translateY(-2px); filter:brightness(1.07); }
+.papyrus-end-l { width:10px; background:linear-gradient(to right,#3E2006,#7A5228,#8D6535,#6B4820); border-radius:50%; flex-shrink:0; }
+.papyrus-end-r { width:10px; background:linear-gradient(to left,#3E2006,#7A5228,#8D6535,#6B4820); border-radius:50%; flex-shrink:0; }
+.papyrus-mid { padding:11px 24px; background:repeating-linear-gradient(180deg,rgba(120,76,16,0.22) 0px,rgba(120,76,16,0.22) 1px,transparent 1px,transparent 4px,rgba(100,62,10,0.14) 4px,rgba(100,62,10,0.14) 5px,transparent 5px,transparent 9px),linear-gradient(170deg,#E2C48C 0%,#CEAA60 38%,#DEBB7E 62%,#C49A4A 100%); white-space:nowrap; }
+.papyrus-mid span { font-family:'EB Garamond',serif; font-size:13px; font-weight:600; color:#2C1505; letter-spacing:0.14em; text-transform:uppercase; }
+
+.papyrus-btn.lg .papyrus-end-l,
+.papyrus-btn.lg .papyrus-end-r { width:14px; background:linear-gradient(to right,#3E2006,#7A5228,#9A7040,#7A5228,#3E2006); }
+.papyrus-btn.lg .papyrus-end-r { background:linear-gradient(to left,#3E2006,#7A5228,#9A7040,#7A5228,#3E2006); }
+.papyrus-btn.lg .papyrus-mid { padding:16px 36px; }
+.papyrus-btn.lg .papyrus-mid span { font-size:17px; }
+.papyrus-btn.lg:hover { transform:translateY(-3px); }
+
+.papyrus-btn.explorer .papyrus-end-l,
+.papyrus-btn.explorer .papyrus-end-r { width:12px; background:linear-gradient(to right,#3E2006,#7A5228,#9A7040,#7A5228,#3E2006); }
+.papyrus-btn.explorer .papyrus-end-r { background:linear-gradient(to left,#3E2006,#7A5228,#9A7040,#7A5228,#3E2006); }
+.papyrus-btn.explorer .papyrus-mid { padding:14px 36px; background:repeating-linear-gradient(180deg,rgba(120,76,16,0.22) 0px,rgba(120,76,16,0.22) 1px,transparent 1px,transparent 4px,rgba(100,62,10,0.14) 4px,rgba(100,62,10,0.14) 5px,transparent 5px,transparent 9px),linear-gradient(170deg,#EED4A0 0%,#DABB70 38%,#ECCF8C 62%,#D2AA58 100%); }
+.papyrus-btn.explorer .papyrus-mid span { font-size:14px; font-weight:700; color:#1E0E02; letter-spacing:0.16em; }
+
+/* Hamburger */
+.rp-hamburger { display:none; cursor:pointer; background:none; border:1px solid rgba(201,168,76,0.35); padding:9px 11px; flex-direction:column; gap:5px; align-items:center; justify-content:center; flex-shrink:0; }
+.rp-hamburger span { display:block; width:22px; height:1.5px; background:#C9A84C; }
+
+/* Mobile menu */
+.mobile-menu { position:fixed; inset:0; background:#0a0805; z-index:299; display:flex; flex-direction:column; opacity:0; pointer-events:none; transition:opacity 0.38s ease; overflow-y:auto; }
+.mobile-menu.open { opacity:1; pointer-events:auto; }
+.mobile-menu-link { font-family:'Playfair Display',serif; font-size:clamp(28px,7vw,52px); font-weight:900; color:rgba(240,230,208,0.88); text-decoration:none; padding:20px 48px; border-bottom:1px solid rgba(201,168,76,0.07); display:flex; justify-content:space-between; align-items:center; transition:background 0.2s, color 0.2s; }
+.mobile-menu-link:hover { background:rgba(201,168,76,0.04); color:#C9A84C; }
+
+/* Hero */
+.rp-hero { min-height:100vh; padding-top:72px; background:#0a0805; display:grid; grid-template-columns:1fr 36% 1fr; position:relative; overflow:hidden; }
+.rp-hero-left { padding:88px 40px 72px 64px; display:flex; flex-direction:column; justify-content:space-between; position:relative; z-index:2; }
+.rp-hero-right { padding:88px 64px 72px 40px; display:flex; flex-direction:column; justify-content:space-around; position:relative; z-index:2; }
+
+/* Social icons */
+.social-icon { color:rgba(240,230,208,0.38); text-decoration:none; display:flex; transition:color 0.2s; }
+.social-icon:hover { color:#C9A84C; }
+
+/* Temple cards */
+.temple-card { position:relative; overflow:hidden; cursor:pointer; transition:transform 0.3s; }
+.temple-card:hover { transform:translateY(-6px); }
+
+/* Artifact cards */
+.artifact-card { cursor:pointer; transition:transform 0.3s; }
+.artifact-card:hover { transform:translateY(-5px); }
+.artifact-img { transition:border-color 0.25s; }
+.artifact-card:hover .artifact-img { border-color:rgba(201,168,76,0.38) !important; }
+
+/* Plan cards */
+.plan-card { padding:48px 40px; cursor:pointer; transition:background 0.25s, border-color 0.25s; }
+.plan-card.active { background:rgba(201,168,76,0.09); border:1px solid rgba(201,168,76,0.62); }
+.plan-card.inactive { background:rgba(255,255,255,0.018); border:1px solid rgba(255,255,255,0.07); }
+
+/* Ritual accordion */
+.ritual-item { padding:44px 48px; cursor:pointer; transition:background 0.35s ease; display:flex; flex-direction:column; justify-content:center; }
+.ritual-item.active { background:rgba(201,168,76,0.06); border-left:3px solid #C9A84C; flex:2; }
+.ritual-item.inactive { background:transparent; border-left:3px solid transparent; flex:1; }
+.ritual-body { overflow:hidden; transition:max-height 0.55s ease, opacity 0.4s ease; padding-left:40px; }
+.ritual-item.active .ritual-body { max-height:220px; opacity:1; }
+.ritual-item.inactive .ritual-body { max-height:0; opacity:0; }
+
+/* Footer links */
+.footer-link { font-family:'EB Garamond',serif; font-size:15px; color:rgba(240,230,208,0.4); text-decoration:none; transition:color 0.2s; }
+.footer-link:hover { color:#f0e6d0; }
+.footer-social { color:rgba(240,230,208,0.28); text-decoration:none; transition:color 0.2s; }
+.footer-social:hover { color:#C9A84C; }
+
+/* Gold corner brackets */
+.gold-bracket { position:absolute; width:44px; height:44px; pointer-events:none; z-index:4; }
+.gold-bracket.tl { top:0; left:0; border-top:2px solid #C9A84C; border-left:2px solid #C9A84C; }
+.gold-bracket.tr { top:0; right:0; border-top:2px solid #C9A84C; border-right:2px solid #C9A84C; }
+.gold-bracket.bl { bottom:0; left:0; border-bottom:2px solid #C9A84C; border-left:2px solid #C9A84C; }
+.gold-bracket.br { bottom:0; right:0; border-bottom:2px solid #C9A84C; border-right:2px solid #C9A84C; }
+
+/* Small corner brackets for artifact cards */
+.sm-bracket { position:absolute; width:18px; height:18px; }
+.sm-bracket.tl { top:10px; left:10px; border-top:1px solid rgba(201,168,76,0.38); border-left:1px solid rgba(201,168,76,0.38); }
+.sm-bracket.tr { top:10px; right:10px; border-top:1px solid rgba(201,168,76,0.38); border-right:1px solid rgba(201,168,76,0.38); }
+.sm-bracket.bl { bottom:10px; left:10px; border-bottom:1px solid rgba(201,168,76,0.38); border-left:1px solid rgba(201,168,76,0.38); }
+.sm-bracket.br { bottom:10px; right:10px; border-bottom:1px solid rgba(201,168,76,0.38); border-right:1px solid rgba(201,168,76,0.38); }
+
+/* Responsive */
+@media (max-width:900px) {
+  .rp-nav { padding:0 24px !important; }
+  .rp-nav-links, .rp-nav-cta { display:none !important; }
+  .rp-hamburger { display:flex !important; }
+  .rp-hero { grid-template-columns:1fr !important; }
+  .rp-hero-mid, .rp-hero-right { display:none !important; }
+  .rp-hero-left { padding:48px 28px 64px !important; }
+  .rp-section { padding:72px 28px !important; }
+  .rp-section-0p { padding:72px 28px 0 !important; }
+  .rp-shead { flex-direction:column !important; gap:20px !important; align-items:flex-start !important; }
+  .rp-shead > *:last-child { text-align:left !important; max-width:100% !important; }
+  .rp-3col { grid-template-columns:1fr !important; }
+  .rp-pyr-head { flex-direction:column !important; gap:28px !important; align-items:flex-start !important; }
+  .rp-pyr-head > *:last-child { text-align:left !important; max-width:100% !important; }
+  .rp-pyr-stats { justify-content:flex-start !important; }
+  .rp-pyr-info { grid-template-columns:1fr !important; }
+  .rp-pyr-info > div:not(:last-child) { border-right:none !important; border-bottom:1px solid rgba(201,168,76,0.1) !important; padding-bottom:32px !important; }
+  .rp-rit-split { grid-template-columns:1fr !important; }
+  .rp-rit-split > div:first-child { min-height:300px; }
+  .rp-4col { grid-template-columns:1fr 1fr !important; gap:36px !important; }
+  .rp-footer-brand { grid-column:1 / -1 !important; }
+  .rp-footer-bottom { flex-direction:column !important; gap:10px !important; align-items:flex-start !important; }
+}
+@media (max-width:520px) {
+  .rp-4col { grid-template-columns:1fr !important; }
+  .rp-pyr-stats { flex-wrap:wrap !important; gap:20px !important; }
+  .rp-hero-left { padding:36px 20px 56px !important; }
+  .rp-section { padding:60px 20px !important; }
+  .rp-section-0p { padding:60px 20px 0 !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="rp-nav" id="mainNav">
+  <div style="display:flex; flex-direction:column; gap:1px; cursor:pointer;">
+    <span style="font-family:'Playfair Display',serif; font-size:17px; font-weight:800; color:#C9A84C; letter-spacing:0.06em; white-space:nowrap; line-height:1;">The Rise of Pharaohs</span>
+    <span style="font-family:'Amiri',serif; font-size:12px; color:rgba(201,168,76,0.55); direction:rtl; text-align:right; line-height:1;">صعود الفراعنة</span>
+  </div>
+  <div class="rp-nav-links" style="display:flex; gap:40px; align-items:center;">
+    <a href="#temples" class="rp-nav-link">Temples</a>
+    <a href="#pyramids" class="rp-nav-link">Pyramids</a>
+    <a href="#rituals" class="rp-nav-link">Rituals</a>
+    <a href="#artifacts" class="rp-nav-link">Artifacts</a>
+    <a href="#journey" class="rp-nav-link">Plan a Trip</a>
+  </div>
+  <div class="rp-nav-cta" style="display:flex; gap:20px; align-items:center;">
+    <a href="#" class="rp-signin">Sign In</a>
+    <a href="#journey" class="papyrus-btn" style="filter:drop-shadow(0 2px 6px rgba(0,0,0,0.55));">
+      <div class="papyrus-end-l"></div>
+      <div class="papyrus-mid"><span>Get a Ticket</span></div>
+      <div class="papyrus-end-r"></div>
+    </a>
+  </div>
+  <button class="rp-hamburger" id="hamburgerBtn">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <div style="position:absolute; top:40%; left:50%; transform:translate(-50%,-50%); width:600px; height:500px; background:radial-gradient(ellipse,rgba(201,168,76,0.06) 0%,transparent 70%); pointer-events:none;"></div>
+  <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 28px; border-bottom:1px solid rgba(201,168,76,0.1); flex-shrink:0; position:relative; z-index:2;">
+    <div>
+      <div style="font-family:'Playfair Display',serif; font-size:16px; font-weight:800; color:#C9A84C; letter-spacing:0.06em;">The Rise of Pharaohs</div>
+      <div style="font-family:'Amiri',serif; font-size:11px; color:rgba(201,168,76,0.45); direction:rtl;">صعود الفراعنة</div>
+    </div>
+    <button id="closeMenuBtn" style="background:none; border:1px solid rgba(201,168,76,0.35); color:#C9A84C; width:44px; height:44px; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;">&#10005;</button>
+  </div>
+  <div style="flex:1; display:flex; flex-direction:column; justify-content:center; position:relative; z-index:2;">
+    <a href="#temples" class="mobile-menu-link"><span>Temples</span><span style="font-family:'Amiri',serif; font-size:15px; color:rgba(201,168,76,0.45); font-weight:400;">المعابد</span></a>
+    <a href="#pyramids" class="mobile-menu-link"><span>Pyramids</span><span style="font-family:'Amiri',serif; font-size:15px; color:rgba(201,168,76,0.45); font-weight:400;">الأهرامات</span></a>
+    <a href="#rituals" class="mobile-menu-link"><span>Rituals</span><span style="font-family:'Amiri',serif; font-size:15px; color:rgba(201,168,76,0.45); font-weight:400;">الطقوس</span></a>
+    <a href="#artifacts" class="mobile-menu-link"><span>Artifacts</span><span style="font-family:'Amiri',serif; font-size:15px; color:rgba(201,168,76,0.45); font-weight:400;">القطع الأثرية</span></a>
+    <a href="#journey" class="mobile-menu-link"><span>Plan a Trip</span><span style="font-family:'Amiri',serif; font-size:15px; color:rgba(201,168,76,0.45); font-weight:400;">خطط لرحلتك</span></a>
+  </div>
+  <div style="padding:28px 48px; border-top:1px solid rgba(201,168,76,0.1); display:flex; justify-content:center; flex-shrink:0; position:relative; z-index:2;">
+    <a href="#journey" class="papyrus-btn explorer" style="filter:drop-shadow(0 3px 10px rgba(0,0,0,0.6));">
+      <div class="papyrus-end-l"></div>
+      <div class="papyrus-mid"><span>Get a Ticket &rarr;</span></div>
+      <div class="papyrus-end-r"></div>
+    </a>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="rp-hero">
+  <video id="hero-video" autoplay muted playsinline style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0;">
+    <source src="project/uploads/kling_20260622_VIDEO_i_want_to__924_0.mp4" type="video/mp4">
+  </video>
+  <div style="position:absolute; inset:0; background:linear-gradient(160deg, rgba(8,5,2,0.78) 0%, rgba(8,5,2,0.55) 45%, rgba(8,5,2,0.78) 100%); pointer-events:none; z-index:1;"></div>
+  <div style="position:absolute; inset:0; background:rgba(40,18,4,0.32); pointer-events:none; z-index:1;"></div>
+  <div style="position:absolute; inset:0; background:radial-gradient(ellipse 85% 85% at 50% 50%, transparent 25%, rgba(4,3,1,0.7) 100%); pointer-events:none; z-index:1;"></div>
+
+  <!-- LEFT -->
+  <div class="rp-hero-left">
+    <div>
+      <p style="font-family:'EB Garamond',serif; font-size:13px; letter-spacing:0.35em; color:#C9A84C; margin:0 0 24px 0; text-transform:uppercase;">&mdash; Archaeological Tourism</p>
+      <h1 style="font-family:'Playfair Display',serif; font-size:clamp(68px,7.5vw,118px); font-weight:900; line-height:0.90; color:#f0e6d0; margin:0 0 6px 0; letter-spacing:-0.02em;">DISCOVER<br>ANCIENT PAST<br>UNVEILED</h1>
+      <p style="font-family:'Amiri',serif; font-size:16px; color:rgba(201,168,76,0.6); direction:rtl; text-align:right; margin:12px 0 28px 0; font-style:italic; line-height:1;">اكتشف ماضياً قديماً أُزيل عنه الغموض</p>
+      <p style="font-family:'EB Garamond',serif; font-size:19px; color:rgba(240,230,208,0.68); line-height:1.65; margin:0 0 36px 0; max-width:380px;">Journey through millennia of buried secrets,<br>where every stone holds a story.</p>
+      <a href="#journey" class="papyrus-btn lg" style="filter:drop-shadow(0 4px 14px rgba(0,0,0,0.7));">
+        <div class="papyrus-end-l"></div>
+        <div class="papyrus-mid" style="display:flex; align-items:center; gap:16px;">
+          <span>Get a Ticket</span>
+          <span style="width:30px; height:30px; border-radius:50%; background:rgba(44,21,5,0.15); border:1px solid rgba(44,21,5,0.3); display:flex; align-items:center; justify-content:center; font-size:16px; color:#2C1505; flex-shrink:0;">&rarr;</span>
+        </div>
+        <div class="papyrus-end-r"></div>
+      </a>
+    </div>
+    <div>
+      <p style="font-family:'EB Garamond',serif; font-size:15px; color:rgba(240,230,208,0.42); line-height:1.85; margin:0 0 28px 0; max-width:310px;">We guide explorers through the timeless<br>wonders of the pharaohs, from the sacred<br>banks of the Nile to the golden sands<br>of the endless desert.</p>
+      <div style="display:flex; gap:22px; align-items:center;">
+        <a href="#" class="social-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+        <a href="#" class="social-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+        <a href="#" class="social-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.41 19.1C5.12 19.56 12 19.56 12 19.56s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="currentColor" stroke="none"/></svg></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- CENTER -->
+  <div class="rp-hero-mid" style="position:relative; z-index:2;"></div>
+
+  <!-- RIGHT -->
+  <div class="rp-hero-right">
+    <div style="text-align:right;">
+      <div style="font-family:'Playfair Display',serif; font-size:clamp(38px,3.8vw,60px); font-weight:900; color:#f0e6d0; line-height:1; margin-bottom:18px; letter-spacing:-0.02em;">3,000+ YEARS<br>OF HISTORY</div>
+      <p style="font-family:'EB Garamond',serif; font-size:16px; color:rgba(240,230,208,0.52); line-height:1.75; margin:0; max-width:270px; margin-left:auto;">From the earliest dynasties to the<br>Ptolemaic empire, Egypt's legacy<br>endures across millennia.</p>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-family:'Playfair Display',serif; font-size:clamp(34px,3.4vw,54px); font-weight:900; color:#f0e6d0; line-height:1; margin-bottom:18px; letter-spacing:-0.02em;">130+ SACRED<br>SITES AWAIT</div>
+      <p style="font-family:'EB Garamond',serif; font-size:16px; color:rgba(240,230,208,0.52); line-height:1.75; margin:0; max-width:250px; margin-left:auto;">Guided through temples, tombs<br>and ancient ritual grounds.</p>
+    </div>
+  </div>
+</section>
+
+<!-- GOLD TICKER -->
+<div style="background:#C9A84C; height:50px; overflow:hidden; display:flex; align-items:center;">
+  <div style="display:inline-flex; align-items:center; white-space:nowrap; animation:ticker 28s linear infinite;">
+    <span style="font-family:'EB Garamond',serif; font-size:13px; font-weight:600; color:#0a0805; letter-spacing:0.22em; padding:0 36px;">&#9651; GIZA PLATEAU</span><span style="color:rgba(10,8,5,0.35); font-size:16px;">&middot;</span>
+    <span style="font-family:'EB Garamond',serif; font-size:13px; font-weight:600; color:#0a0805; letter-spacing:0.22em; padding:0 36px;">&#9737; KARNAK TEMPLE</span><span style="color:rgba(10,8,5,0.35); font-size:16px;">&middot;</span>
+    <span style="font-family:'EB Garamond',serif; font-size:13px; font-weight:600; color:#0a0805; letter-spacing:0.22em; padding:0 36px;">&#9672; LUXOR</span><span style="color:rgba(10,8,5,0.35); font-size:16px;">&middot;</span>
+    <span style="font-family:'EB Garamond',serif; font-size:13px; font-weight:600; color:#0a0805; letter-spacing:0.22em; padding:0 36px;">&#8853; ABU SIMBEL</span><span style="color:rgba(10,8,5,0.35); font-size:16px;">&middot;</span>
+    <span style="font-family:'EB Garamond',serif; font-size:13px; font-weight:600; color:#0a0805; letter-spacing:0.22em; padding:0 36px;">&#8862; SAQQARA</span><span style="color:rgba(10,8,5,0.35); font-size:16px;">&middot;</span>
+    <span style="font-family:'EB Garamond',serif; font-size:13px; font-weight:600; color:#0a0805; letter-spacing:0.22em; padding:0 36px;">&#9711; VALLEY OF KINGS</span><span style="color:rgba(10,8,5,0.35); font-size:16px;">&middot;</span>
+    <span style="font-family:'EB Garamond',serif; font-size:13px; font-weight:600; color:#0a0805; letter-spacing:0.22em; padding:0 36px;">&#9651; GIZA PLATEAU</span><span style="color:rgba(10,8,5,0.35); font-size:16px;">&middot;</span>
+    <span style="font-family:'EB Garamond',serif; font-size:13px; font-weight:600; color:#0a0805; letter-spacing:0.22em; padding:0 36px;">&#9737; KARNAK TEMPLE</span><span style="color:rgba(10,8,5,0.35); font-size:16px;">&middot;</span>
+    <span style="font-family:'EB Garamond',serif; font-size:13px; font-weight:600; color:#0a0805; letter-spacing:0.22em; padding:0 36px;">&#9672; LUXOR</span><span style="color:rgba(10,8,5,0.35); font-size:16px;">&middot;</span>
+    <span style="font-family:'EB Garamond',serif; font-size:13px; font-weight:600; color:#0a0805; letter-spacing:0.22em; padding:0 36px;">&#8853; ABU SIMBEL</span><span style="color:rgba(10,8,5,0.35); font-size:16px;">&middot;</span>
+    <span style="font-family:'EB Garamond',serif; font-size:13px; font-weight:600; color:#0a0805; letter-spacing:0.22em; padding:0 36px;">&#8862; SAQQARA</span><span style="color:rgba(10,8,5,0.35); font-size:16px;">&middot;</span>
+    <span style="font-family:'EB Garamond',serif; font-size:13px; font-weight:600; color:#0a0805; letter-spacing:0.22em; padding:0 36px;">&#9711; VALLEY OF KINGS</span><span style="color:rgba(10,8,5,0.35); font-size:16px;">&middot;</span>
+  </div>
+</div>
+
+<!-- TEMPLES -->
+<section id="temples" class="rp-section" style="padding:120px 64px; background:#0e0b07; scroll-margin-top:72px;">
+  <div class="rp-shead" style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:72px;">
+    <div>
+      <p style="font-family:'EB Garamond',serif; font-size:12px; letter-spacing:0.35em; color:#C9A84C; margin:0 0 16px 0; text-transform:uppercase;">&mdash; Sacred Grounds</p>
+      <h2 style="font-family:'Playfair Display',serif; font-size:clamp(52px,6vw,88px); font-weight:900; color:#f0e6d0; margin:0; line-height:0.92; letter-spacing:-0.02em;">THE TEMPLES</h2>
+      <p style="font-family:'Amiri',serif; font-size:18px; color:rgba(201,168,76,0.6); margin:10px 0 0 0; direction:rtl;">المعابد المقدسة</p>
+    </div>
+    <p style="font-family:'EB Garamond',serif; font-size:18px; color:rgba(240,230,208,0.5); max-width:340px; text-align:right; line-height:1.75; margin:0;">Monumental sanctuaries built to honor the gods &mdash; standing defiant against the passage of time.</p>
+  </div>
+  <div class="rp-3col" style="display:grid; grid-template-columns:repeat(3,1fr); gap:3px;">
+    <div class="temple-card">
+      <div style="height:520px; background:#13100a; display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-end; padding:36px; position:relative;">
+        <img src="https://picsum.photos/seed/karnak-temple/800/520" alt="Karnak Temple" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; opacity:0.6;">
+        <div style="position:absolute; top:0; left:0; right:0; bottom:0; background:linear-gradient(to top, rgba(8,5,2,0.97) 0%, rgba(8,5,2,0.18) 55%);"></div>
+        <div style="position:absolute; bottom:0; left:0; right:0; height:2px; background:linear-gradient(to right,transparent,#C9A84C,transparent);"></div>
+        <div style="position:relative; z-index:2;">
+          <p style="font-family:'EB Garamond',serif; font-size:12px; letter-spacing:0.25em; color:#C9A84C; margin:0 0 8px 0; text-transform:uppercase;">Luxor, Egypt</p>
+          <h3 style="font-family:'Playfair Display',serif; font-size:38px; font-weight:800; color:#f0e6d0; margin:0 0 6px 0; line-height:1.05;">Karnak<br>Temple</h3>
+          <p style="font-family:'Amiri',serif; font-size:15px; color:rgba(201,168,76,0.65); margin:0 0 14px 0;">معبد الكرنك</p>
+          <p style="font-family:'EB Garamond',serif; font-size:15px; color:rgba(240,230,208,0.52); margin:0; line-height:1.65;">The largest religious complex ever built &mdash; dedicated to Amun over 2,000 years of pharaonic rule.</p>
+        </div>
+      </div>
+    </div>
+    <div class="temple-card">
+      <div style="height:520px; background:#0f0c08; display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-end; padding:36px; position:relative;">
+        <img src="https://picsum.photos/seed/luxor-night/800/520" alt="Luxor Temple" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; opacity:0.6;">
+        <div style="position:absolute; top:0; left:0; right:0; bottom:0; background:linear-gradient(to top,rgba(8,5,2,0.97) 0%,rgba(8,5,2,0.18) 55%);"></div>
+        <div style="position:absolute; bottom:0; left:0; right:0; height:2px; background:linear-gradient(to right,transparent,#C9A84C,transparent);"></div>
+        <div style="position:relative; z-index:2;">
+          <p style="font-family:'EB Garamond',serif; font-size:12px; letter-spacing:0.25em; color:#C9A84C; margin:0 0 8px 0; text-transform:uppercase;">Luxor, Egypt</p>
+          <h3 style="font-family:'Playfair Display',serif; font-size:38px; font-weight:800; color:#f0e6d0; margin:0 0 6px 0; line-height:1.05;">Luxor<br>Temple</h3>
+          <p style="font-family:'Amiri',serif; font-size:15px; color:rgba(201,168,76,0.65); margin:0 0 14px 0;">معبد الأقصر</p>
+          <p style="font-family:'EB Garamond',serif; font-size:15px; color:rgba(240,230,208,0.52); margin:0; line-height:1.65;">A grand temple on the east bank of the Nile, illuminated at night by flickering torchlight for millennia.</p>
+        </div>
+      </div>
+    </div>
+    <div class="temple-card">
+      <div style="height:520px; background:#120e09; display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-end; padding:36px; position:relative;">
+        <img src="https://picsum.photos/seed/abu-simbel/800/520" alt="Abu Simbel" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; opacity:0.6;">
+        <div style="position:absolute; top:0; left:0; right:0; bottom:0; background:linear-gradient(to top,rgba(8,5,2,0.97) 0%,rgba(8,5,2,0.18) 55%);"></div>
+        <div style="position:absolute; bottom:0; left:0; right:0; height:2px; background:linear-gradient(to right,transparent,#C9A84C,transparent);"></div>
+        <div style="position:relative; z-index:2;">
+          <p style="font-family:'EB Garamond',serif; font-size:12px; letter-spacing:0.25em; color:#C9A84C; margin:0 0 8px 0; text-transform:uppercase;">Aswan, Egypt</p>
+          <h3 style="font-family:'Playfair Display',serif; font-size:38px; font-weight:800; color:#f0e6d0; margin:0 0 6px 0; line-height:1.05;">Abu<br>Simbel</h3>
+          <p style="font-family:'Amiri',serif; font-size:15px; color:rgba(201,168,76,0.65); margin:0 0 14px 0;">أبو سمبل</p>
+          <p style="font-family:'EB Garamond',serif; font-size:15px; color:rgba(240,230,208,0.52); margin:0; line-height:1.65;">Twin temples carved from solid rock by Ramesses II &mdash; twice a year, sunlight pierces to the innermost shrine.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PYRAMIDS -->
+<section id="pyramids" class="rp-section-0p" style="padding:120px 64px 0 64px; background:#0a0805; scroll-margin-top:72px; overflow:hidden;">
+  <div class="rp-pyr-head" style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:80px;">
+    <div>
+      <p style="font-family:'EB Garamond',serif; font-size:12px; letter-spacing:0.35em; color:#C9A84C; margin:0 0 16px 0; text-transform:uppercase;">&mdash; The Great Wonders</p>
+      <h2 style="font-family:'Playfair Display',serif; font-size:clamp(52px,6vw,88px); font-weight:900; color:#f0e6d0; margin:0; line-height:0.92; letter-spacing:-0.02em;">THE PYRAMIDS</h2>
+      <p style="font-family:'Amiri',serif; font-size:18px; color:rgba(201,168,76,0.6); margin:10px 0 0 0; direction:rtl;">أهرامات الفراعنة</p>
+    </div>
+    <div style="text-align:right; max-width:400px;">
+      <p style="font-family:'EB Garamond',serif; font-size:18px; color:rgba(240,230,208,0.5); line-height:1.75; margin:0 0 36px 0;">Engineering marvels that have defined human civilization for over 4,500 years.</p>
+      <div class="rp-pyr-stats" style="display:flex; gap:48px; justify-content:flex-end;">
+        <div style="text-align:center;">
+          <div style="font-family:'Playfair Display',serif; font-size:40px; font-weight:900; color:#C9A84C; line-height:1;">481</div>
+          <div style="font-family:'EB Garamond',serif; font-size:11px; letter-spacing:0.2em; color:rgba(240,230,208,0.4); margin-top:4px; text-transform:uppercase;">Feet Tall</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-family:'Playfair Display',serif; font-size:40px; font-weight:900; color:#C9A84C; line-height:1;">2.3M</div>
+          <div style="font-family:'EB Garamond',serif; font-size:11px; letter-spacing:0.2em; color:rgba(240,230,208,0.4); margin-top:4px; text-transform:uppercase;">Stone Blocks</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-family:'Playfair Display',serif; font-size:40px; font-weight:900; color:#C9A84C; line-height:1;">4,500</div>
+          <div style="font-family:'EB Garamond',serif; font-size:11px; letter-spacing:0.2em; color:rgba(240,230,208,0.4); margin-top:4px; text-transform:uppercase;">Years Old</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="position:relative; overflow:hidden; margin-bottom:-1px;">
+    <div class="gold-bracket tl"></div><div class="gold-bracket tr"></div><div class="gold-bracket bl"></div><div class="gold-bracket br"></div>
+    <div style="position:absolute; inset:0; background:linear-gradient(160deg,rgba(8,5,2,0.45) 0%,rgba(8,5,2,0.2) 50%,rgba(8,5,2,0.55) 100%); z-index:2; pointer-events:none;"></div>
+    <div style="position:absolute; inset:0; background:rgba(30,14,2,0.28); z-index:2; pointer-events:none;"></div>
+    <div style="position:absolute; top:0; left:0; right:0; height:100px; background:linear-gradient(to bottom,#0a0805,transparent); z-index:3; pointer-events:none;"></div>
+    <div style="position:absolute; bottom:0; left:0; right:0; height:100px; background:linear-gradient(to top,#0a0805,transparent); z-index:3; pointer-events:none;"></div>
+    <video autoplay muted loop playsinline style="width:100%; height:480px; object-fit:cover; display:block;">
+      <source src="project/uploads/banner image.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="rp-pyr-info" style="display:grid; grid-template-columns:1fr 1fr 1fr; border-top:1px solid rgba(201,168,76,0.18); padding:56px 0 72px 0;">
+    <div style="padding-right:56px; border-right:1px solid rgba(201,168,76,0.1);">
+      <h4 style="font-family:'Playfair Display',serif; font-size:24px; font-weight:700; color:#C9A84C; margin:0 0 12px 0;">Great Pyramid of Giza</h4>
+      <p style="font-family:'Amiri',serif; font-size:14px; color:rgba(201,168,76,0.45); margin:0 0 12px 0; direction:rtl;">الهرم الأكبر</p>
+      <p style="font-family:'EB Garamond',serif; font-size:16px; color:rgba(240,230,208,0.48); line-height:1.75; margin:0;">The oldest of the Seven Wonders and the only one still largely intact, built for Pharaoh Khufu.</p>
+    </div>
+    <div style="padding:0 56px; border-right:1px solid rgba(201,168,76,0.1);">
+      <h4 style="font-family:'Playfair Display',serif; font-size:24px; font-weight:700; color:#C9A84C; margin:0 0 12px 0;">Pyramid of Khafre</h4>
+      <p style="font-family:'Amiri',serif; font-size:14px; color:rgba(201,168,76,0.45); margin:0 0 12px 0; direction:rtl;">هرم خفرع</p>
+      <p style="font-family:'EB Garamond',serif; font-size:16px; color:rgba(240,230,208,0.48); line-height:1.75; margin:0;">Second largest at Giza, crowned with original white limestone casing stones near its apex &mdash; a rare survivor.</p>
+    </div>
+    <div style="padding-left:56px;">
+      <h4 style="font-family:'Playfair Display',serif; font-size:24px; font-weight:700; color:#C9A84C; margin:0 0 12px 0;">Step Pyramid, Saqqara</h4>
+      <p style="font-family:'Amiri',serif; font-size:14px; color:rgba(201,168,76,0.45); margin:0 0 12px 0; direction:rtl;">هرم سقارة المدرج</p>
+      <p style="font-family:'EB Garamond',serif; font-size:16px; color:rgba(240,230,208,0.48); line-height:1.75; margin:0;">The world's oldest monumental stone structure, commissioned by Pharaoh Djoser around 2650 BC.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FIRE RITUALS -->
+<section id="rituals" class="rp-section-0p" style="padding:120px 64px 0 64px; background:#060402; scroll-margin-top:72px; position:relative; overflow:hidden;">
+  <div style="position:absolute; top:55%; left:30%; transform:translate(-50%,-50%); width:700px; height:600px; background:radial-gradient(ellipse,rgba(200,80,5,0.1) 0%,transparent 70%); pointer-events:none; animation:ambientGlow 3.5s ease-in-out infinite; z-index:0;"></div>
+  <div class="rp-shead" style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:72px; position:relative; z-index:2;">
+    <div>
+      <p style="font-family:'EB Garamond',serif; font-size:12px; letter-spacing:0.35em; color:#C9A84C; margin:0 0 16px 0; text-transform:uppercase;">&mdash; Sacred Ceremonies</p>
+      <h2 style="font-family:'Playfair Display',serif; font-size:clamp(52px,6vw,88px); font-weight:900; color:#f0e6d0; margin:0; line-height:0.92; letter-spacing:-0.02em;">ANCIENT FIRE<br>RITUALS</h2>
+      <p style="font-family:'Amiri',serif; font-size:18px; color:rgba(201,168,76,0.6); margin:10px 0 0 0; direction:rtl;">طقوس النار القديمة</p>
+    </div>
+    <p style="font-family:'EB Garamond',serif; font-size:18px; color:rgba(240,230,208,0.5); max-width:360px; text-align:right; line-height:1.75; margin:0;">For millennia, fire illuminated the sacred chambers &mdash; torchlight guiding priests through midnight ceremonies of rebirth.</p>
+  </div>
+
+  <div class="rp-rit-split" style="display:grid; grid-template-columns:55% 45%; min-height:640px; position:relative; z-index:2;">
+    <!-- Video -->
+    <div style="position:relative; overflow:hidden;">
+      <svg viewBox="0 0 560 88" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="position:absolute; top:0; left:0; width:100%; height:88px; z-index:4; pointer-events:none;">
+        <path d="M0,0 L0,88 L48,88 L48,52 Q64,14 80,52 L80,88 L480,88 L480,52 Q496,14 512,52 L512,88 L560,88 L560,0 Z" fill="#060402"/>
+        <line x1="80" y1="0" x2="80" y2="88" stroke="#C9A84C" stroke-width="1" opacity="0.45"/>
+        <line x1="480" y1="0" x2="480" y2="88" stroke="#C9A84C" stroke-width="1" opacity="0.45"/>
+        <line x1="48" y1="52" x2="80" y2="52" stroke="#C9A84C" stroke-width="1" opacity="0.45"/>
+        <line x1="480" y1="52" x2="512" y2="52" stroke="#C9A84C" stroke-width="1" opacity="0.45"/>
+      </svg>
+      <div class="gold-bracket tl" style="z-index:5;"></div><div class="gold-bracket tr" style="z-index:5;"></div>
+      <div class="gold-bracket bl" style="z-index:5;"></div><div class="gold-bracket br" style="z-index:5;"></div>
+      <div style="position:absolute; inset:0; border:1px solid rgba(201,168,76,0.2); z-index:4; pointer-events:none;"></div>
+      <div style="position:absolute; top:0; right:0; width:90px; height:100%; background:linear-gradient(to right, transparent, #060402); z-index:3; pointer-events:none;"></div>
+      <div style="position:absolute; bottom:0; left:0; right:0; height:80px; background:linear-gradient(to bottom, transparent, #060402); z-index:3; pointer-events:none;"></div>
+      <div style="position:absolute; inset:0; background:rgba(30,10,0,0.32); z-index:2; pointer-events:none;"></div>
+      <video autoplay muted loop playsinline style="width:100%; height:100%; object-fit:cover; display:block;">
+        <source src="project/uploads/kling_20260622_VIDEO_i_want_thi_59_0.mp4" type="video/mp4">
+      </video>
+    </div>
+
+    <!-- Accordion -->
+    <div id="ritualAccordion" style="display:flex; flex-direction:column; background:#060402; border-left:1px solid rgba(201,168,76,0.1);">
+      <div class="ritual-item active" data-index="0">
+        <div style="display:flex; align-items:flex-start; gap:22px;">
+          <div style="flex-shrink:0; width:18px; margin-top:2px;">
+            <svg class="ritual-flame" width="18" height="30" viewBox="0 0 18 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path class="flame-outer" d="M9,30 Q1,20 4,12 Q6,19 9,16 Q12,19 14,12 Q17,20 9,30Z" fill="#ff7700"/>
+              <path class="flame-inner" d="M9,26 Q5,20 7,15 Q8,20 9,18 Q10,20 11,15 Q13,20 9,26Z" fill="#ffee00"/>
+            </svg>
+          </div>
+          <div style="flex:1;">
+            <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:6px;">
+              <span class="ritual-num" style="font-family:'EB Garamond',serif; font-size:11px; font-weight:600; letter-spacing:0.3em; transition:color 0.3s;">01</span>
+              <h3 class="ritual-title" style="font-family:'Playfair Display',serif; font-size:22px; font-weight:700; margin:0; line-height:1.1; transition:color 0.3s;">The Sacred Flame</h3>
+            </div>
+            <p style="font-family:'Amiri',serif; font-size:13px; color:rgba(201,168,76,0.4); margin:0; direction:rtl; text-align:left;">اللهب المقدس</p>
+          </div>
+          <span class="ritual-arrow" style="font-family:'EB Garamond',serif; font-size:18px; transition:all 0.3s; margin-top:4px; flex-shrink:0;">&minus;</span>
+        </div>
+        <div class="ritual-body">
+          <p style="font-family:'EB Garamond',serif; font-size:16px; color:rgba(240,230,208,0.6); line-height:1.85; margin:20px 0 0 0;">Fire was the breath of Ra, the sun god. Eternal flames burned in temple sanctuaries as living offerings to the divine &mdash; never extinguished throughout the nightly vigil.</p>
+          <div style="display:flex; gap:28px; margin-top:22px;">
+            <div><div style="font-family:'Playfair Display',serif; font-size:22px; font-weight:800; color:#C9A84C; line-height:1;">&infin;</div><div style="font-family:'EB Garamond',serif; font-size:10px; letter-spacing:0.18em; color:rgba(240,230,208,0.3); margin-top:4px; text-transform:uppercase;">Eternal</div></div>
+            <div><div style="font-family:'Playfair Display',serif; font-size:22px; font-weight:800; color:#C9A84C; line-height:1;">Ra</div><div style="font-family:'EB Garamond',serif; font-size:10px; letter-spacing:0.18em; color:rgba(240,230,208,0.3); margin-top:4px; text-transform:uppercase;">Sun God</div></div>
+          </div>
+        </div>
+      </div>
+      <div style="height:1px; background:rgba(201,168,76,0.08); margin:0 48px;"></div>
+      <div class="ritual-item inactive" data-index="1">
+        <div style="display:flex; align-items:flex-start; gap:22px;">
+          <div style="flex-shrink:0; width:18px; margin-top:2px;">
+            <svg class="ritual-flame" width="18" height="30" viewBox="0 0 18 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path class="flame-outer" d="M9,30 Q1,20 4,12 Q6,19 9,16 Q12,19 14,12 Q17,20 9,30Z" fill="rgba(201,168,76,0.22)"/>
+              <path class="flame-inner" d="M9,26 Q5,20 7,15 Q8,20 9,18 Q10,20 11,15 Q13,20 9,26Z" fill="rgba(201,168,76,0.1)"/>
+            </svg>
+          </div>
+          <div style="flex:1;">
+            <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:6px;">
+              <span class="ritual-num" style="font-family:'EB Garamond',serif; font-size:11px; font-weight:600; letter-spacing:0.3em; transition:color 0.3s;">02</span>
+              <h3 class="ritual-title" style="font-family:'Playfair Display',serif; font-size:22px; font-weight:700; margin:0; line-height:1.1; transition:color 0.3s;">Torch Processions</h3>
+            </div>
+            <p style="font-family:'Amiri',serif; font-size:13px; color:rgba(201,168,76,0.4); margin:0; direction:rtl; text-align:left;">مواكب المشاعل</p>
+          </div>
+          <span class="ritual-arrow" style="font-family:'EB Garamond',serif; font-size:18px; transition:all 0.3s; margin-top:4px; flex-shrink:0;">+</span>
+        </div>
+        <div class="ritual-body">
+          <p style="font-family:'EB Garamond',serif; font-size:16px; color:rgba(240,230,208,0.6); line-height:1.85; margin:20px 0 0 0;">Priests carried flickering torches in solemn processions &mdash; marking the passage of the soul from death into the Field of Reeds, the Egyptian realm of eternal life.</p>
+          <div style="display:flex; gap:28px; margin-top:22px;">
+            <div><div style="font-family:'Playfair Display',serif; font-size:22px; font-weight:800; color:#C9A84C; line-height:1;">70</div><div style="font-family:'EB Garamond',serif; font-size:10px; letter-spacing:0.18em; color:rgba(240,230,208,0.3); margin-top:4px; text-transform:uppercase;">Days Long</div></div>
+            <div><div style="font-family:'Playfair Display',serif; font-size:22px; font-weight:800; color:#C9A84C; line-height:1;">Duat</div><div style="font-family:'EB Garamond',serif; font-size:10px; letter-spacing:0.18em; color:rgba(240,230,208,0.3); margin-top:4px; text-transform:uppercase;">Afterlife</div></div>
+          </div>
+        </div>
+      </div>
+      <div style="height:1px; background:rgba(201,168,76,0.08); margin:0 48px;"></div>
+      <div class="ritual-item inactive" data-index="2">
+        <div style="display:flex; align-items:flex-start; gap:22px;">
+          <div style="flex-shrink:0; width:18px; margin-top:2px;">
+            <svg class="ritual-flame" width="18" height="30" viewBox="0 0 18 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path class="flame-outer" d="M9,30 Q1,20 4,12 Q6,19 9,16 Q12,19 14,12 Q17,20 9,30Z" fill="rgba(201,168,76,0.22)"/>
+              <path class="flame-inner" d="M9,26 Q5,20 7,15 Q8,20 9,18 Q10,20 11,15 Q13,20 9,26Z" fill="rgba(201,168,76,0.1)"/>
+            </svg>
+          </div>
+          <div style="flex:1;">
+            <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:6px;">
+              <span class="ritual-num" style="font-family:'EB Garamond',serif; font-size:11px; font-weight:600; letter-spacing:0.3em; transition:color 0.3s;">03</span>
+              <h3 class="ritual-title" style="font-family:'Playfair Display',serif; font-size:22px; font-weight:700; margin:0; line-height:1.1; transition:color 0.3s;">Opening of the Mouth</h3>
+            </div>
+            <p style="font-family:'Amiri',serif; font-size:13px; color:rgba(201,168,76,0.4); margin:0; direction:rtl; text-align:left;">طقسة فتح الفم</p>
+          </div>
+          <span class="ritual-arrow" style="font-family:'EB Garamond',serif; font-size:18px; transition:all 0.3s; margin-top:4px; flex-shrink:0;">+</span>
+        </div>
+        <div class="ritual-body">
+          <p style="font-family:'EB Garamond',serif; font-size:16px; color:rgba(240,230,208,0.6); line-height:1.85; margin:20px 0 0 0;">Fire sticks were wielded to reanimate mummies and divine statues &mdash; restoring sight, speech, hearing, and touch to the deceased's eternal form and awakening the Ka soul.</p>
+          <div style="display:flex; gap:28px; margin-top:22px;">
+            <div><div style="font-family:'Playfair Display',serif; font-size:22px; font-weight:800; color:#C9A84C; line-height:1;">7</div><div style="font-family:'EB Garamond',serif; font-size:10px; letter-spacing:0.18em; color:rgba(240,230,208,0.3); margin-top:4px; text-transform:uppercase;">Sacred Tools</div></div>
+            <div><div style="font-family:'Playfair Display',serif; font-size:22px; font-weight:800; color:#C9A84C; line-height:1;">Ka</div><div style="font-family:'EB Garamond',serif; font-size:10px; letter-spacing:0.18em; color:rgba(240,230,208,0.3); margin-top:4px; text-transform:uppercase;">Life Force</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding:56px 0 80px 0; border-top:1px solid rgba(201,168,76,0.1); position:relative; z-index:2; text-align:center;">
+    <p style="font-family:'Playfair Display',serif; font-style:italic; font-size:20px; color:rgba(240,230,208,0.35); margin:0 auto; max-width:680px; line-height:1.7;">&ldquo;Fire is the language of the gods &mdash; only those who carry the flame may walk between worlds.&rdquo;</p>
+    <p style="font-family:'Amiri',serif; font-size:14px; color:rgba(201,168,76,0.32); margin:14px 0 0 0; direction:rtl;">النار لغة الآلهة — فقط من يحمل اللهب يستطيع السير بين العوالم</p>
+  </div>
+</section>
+
+<!-- ARTIFACTS -->
+<section id="artifacts" class="rp-section" style="padding:120px 64px; background:#0c0906; scroll-margin-top:72px;">
+  <div class="rp-shead" style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:72px;">
+    <div>
+      <p style="font-family:'EB Garamond',serif; font-size:12px; letter-spacing:0.35em; color:#C9A84C; margin:0 0 16px 0; text-transform:uppercase;">&mdash; The Relics</p>
+      <h2 style="font-family:'Playfair Display',serif; font-size:clamp(52px,6vw,88px); font-weight:900; color:#f0e6d0; margin:0; line-height:0.92; letter-spacing:-0.02em;">ARTIFACTS &amp;<br>TREASURES</h2>
+      <p style="font-family:'Amiri',serif; font-size:18px; color:rgba(201,168,76,0.6); margin:10px 0 0 0; direction:rtl; text-align:left;">القطع الأثرية والكنوز</p>
+    </div>
+    <a href="#" class="papyrus-btn" style="filter:drop-shadow(0 2px 8px rgba(0,0,0,0.5));">
+      <div class="papyrus-end-l"></div>
+      <div class="papyrus-mid" style="padding:15px 32px;"><span style="letter-spacing:0.2em;">VIEW COLLECTION &rarr;</span></div>
+      <div class="papyrus-end-r"></div>
+    </a>
+  </div>
+  <div class="rp-3col" style="display:grid; grid-template-columns:repeat(3,1fr); gap:24px;">
+    <!-- Tutankhamun -->
+    <div class="artifact-card">
+      <div class="artifact-img" style="height:260px; background:repeating-linear-gradient(45deg,#12100a 0,#12100a 12px,#161310 12px,#161310 24px); border:1px solid rgba(201,168,76,0.1); position:relative; display:flex; align-items:center; justify-content:center; margin-bottom:18px;">
+        <svg viewBox="0 0 100 160" width="88" height="140" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22,52 Q14,100 14,148 L30,138 L36,80" fill="#C9A84C" opacity="0.55"/><path d="M78,52 Q86,100 86,148 L70,138 L64,80" fill="#C9A84C" opacity="0.55"/><rect x="22" y="14" width="56" height="42" rx="4" fill="#C9A84C" opacity="0.65"/><line x1="22" y1="22" x2="78" y2="22" stroke="#7a5200" stroke-width="1.5"/><line x1="22" y1="30" x2="78" y2="30" stroke="#7a5200" stroke-width="1.5"/><line x1="22" y1="38" x2="78" y2="38" stroke="#7a5200" stroke-width="1.5"/><line x1="22" y1="46" x2="78" y2="46" stroke="#7a5200" stroke-width="1.5"/><ellipse cx="50" cy="82" rx="26" ry="30" fill="#C9A84C" opacity="0.72"/><ellipse cx="40" cy="76" rx="6" ry="3.5" fill="#060402"/><ellipse cx="60" cy="76" rx="6" ry="3.5" fill="#060402"/><line x1="34" y1="76" x2="27" y2="74" stroke="#C9A84C" stroke-width="1.5"/><line x1="66" y1="76" x2="73" y2="74" stroke="#C9A84C" stroke-width="1.5"/><path d="M48,86 Q47,94 50,96 Q53,94 52,86" fill="#7a5200" opacity="0.6"/><rect x="43" y="108" width="14" height="28" rx="3" fill="#C9A84C" opacity="0.6"/><line x1="43" y1="116" x2="57" y2="116" stroke="#7a5200" stroke-width="1.2"/><line x1="43" y1="123" x2="57" y2="123" stroke="#7a5200" stroke-width="1.2"/><line x1="43" y1="130" x2="57" y2="130" stroke="#7a5200" stroke-width="1.2"/><path d="M50,14 Q47,6 50,2 Q53,6 50,14" fill="#E8C84A"/><path d="M27,104 Q50,116 73,104" stroke="#C9A84C" stroke-width="2" fill="none" opacity="0.5"/><path d="M30,110 Q50,121 70,110" stroke="#C9A84C" stroke-width="1.5" fill="none" opacity="0.35"/></svg>
+        <div class="sm-bracket tl"></div><div class="sm-bracket tr"></div><div class="sm-bracket bl"></div><div class="sm-bracket br"></div>
+      </div>
+      <p style="font-family:'EB Garamond',serif; font-size:11px; letter-spacing:0.22em; color:#C9A84C; margin:0 0 6px 0; text-transform:uppercase;">New Kingdom &middot; 1323 BC</p>
+      <h4 style="font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:#f0e6d0; margin:0 0 4px 0;">Mask of Tutankhamun</h4>
+      <p style="font-family:'Amiri',serif; font-size:13px; color:rgba(201,168,76,0.45); margin:0;">قناع توت عنخ آمون</p>
+    </div>
+    <!-- Rosetta Stone -->
+    <div class="artifact-card">
+      <div class="artifact-img" style="height:260px; background:repeating-linear-gradient(-45deg,#100e09 0,#100e09 12px,#141108 12px,#141108 24px); border:1px solid rgba(201,168,76,0.1); position:relative; display:flex; align-items:center; justify-content:center; margin-bottom:18px;">
+        <svg viewBox="0 0 90 122" width="78" height="106" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8,22 Q12,5 45,5 Q78,5 82,22 L82,117 L8,117 Z" fill="#C9A84C" opacity="0.1" stroke="#C9A84C" stroke-width="1.2"/><line x1="16" y1="26" x2="74" y2="26" stroke="#C9A84C" stroke-width="1" opacity="0.55"/><line x1="16" y1="32" x2="62" y2="32" stroke="#C9A84C" stroke-width="1" opacity="0.45"/><line x1="16" y1="38" x2="70" y2="38" stroke="#C9A84C" stroke-width="1" opacity="0.55"/><line x1="16" y1="44" x2="58" y2="44" stroke="#C9A84C" stroke-width="1" opacity="0.45"/><rect x="8" y="50" width="74" height="2" fill="#C9A84C" opacity="0.38"/><line x1="16" y1="58" x2="72" y2="58" stroke="#C9A84C" stroke-width="1" opacity="0.55"/><line x1="16" y1="64" x2="65" y2="64" stroke="#C9A84C" stroke-width="1" opacity="0.45"/><line x1="16" y1="70" x2="72" y2="70" stroke="#C9A84C" stroke-width="1" opacity="0.55"/><line x1="16" y1="76" x2="60" y2="76" stroke="#C9A84C" stroke-width="1" opacity="0.45"/><rect x="8" y="82" width="74" height="2" fill="#C9A84C" opacity="0.38"/><line x1="16" y1="90" x2="74" y2="90" stroke="#C9A84C" stroke-width="1" opacity="0.55"/><line x1="16" y1="96" x2="68" y2="96" stroke="#C9A84C" stroke-width="1" opacity="0.45"/><line x1="16" y1="102" x2="74" y2="102" stroke="#C9A84C" stroke-width="1" opacity="0.55"/><line x1="16" y1="108" x2="62" y2="108" stroke="#C9A84C" stroke-width="1" opacity="0.45"/><line x1="16" y1="114" x2="74" y2="114" stroke="#C9A84C" stroke-width="1" opacity="0.55"/></svg>
+        <div class="sm-bracket tl"></div><div class="sm-bracket tr"></div><div class="sm-bracket bl"></div><div class="sm-bracket br"></div>
+      </div>
+      <p style="font-family:'EB Garamond',serif; font-size:11px; letter-spacing:0.22em; color:#C9A84C; margin:0 0 6px 0; text-transform:uppercase;">Ptolemaic &middot; 196 BC</p>
+      <h4 style="font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:#f0e6d0; margin:0 0 4px 0;">The Rosetta Stone</h4>
+      <p style="font-family:'Amiri',serif; font-size:13px; color:rgba(201,168,76,0.45); margin:0;">حجر رشيد</p>
+    </div>
+    <!-- Book of the Dead -->
+    <div class="artifact-card">
+      <div class="artifact-img" style="height:260px; background:repeating-linear-gradient(45deg,#130f0a 0,#130f0a 12px,#17130d 12px,#17130d 24px); border:1px solid rgba(201,168,76,0.1); position:relative; display:flex; align-items:center; justify-content:center; margin-bottom:18px;">
+        <svg viewBox="0 0 130 90" width="118" height="82" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="12" cy="45" rx="10" ry="42" fill="#C9A84C" opacity="0.22" stroke="#C9A84C" stroke-width="1"/><line x1="12" y1="7" x2="12" y2="83" stroke="#7a5200" stroke-width="1" opacity="0.4"/><ellipse cx="118" cy="45" rx="10" ry="42" fill="#C9A84C" opacity="0.22" stroke="#C9A84C" stroke-width="1"/><line x1="118" y1="7" x2="118" y2="83" stroke="#7a5200" stroke-width="1" opacity="0.4"/><rect x="12" y="3" width="106" height="84" fill="#C9A84C" opacity="0.07"/><path d="M40,38 Q65,28 90,38 Q65,48 40,38Z" stroke="#C9A84C" stroke-width="2" fill="none" opacity="0.85"/><circle cx="65" cy="38" r="7" fill="#C9A84C" opacity="0.7"/><circle cx="65" cy="38" r="3.5" fill="#060402"/><path d="M57,46 Q60,55 56,62" stroke="#C9A84C" stroke-width="1.8" fill="none" opacity="0.75"/><line x1="56" y1="62" x2="46" y2="65" stroke="#C9A84C" stroke-width="1.5" opacity="0.75"/><path d="M73,46 Q70,55 74,62" stroke="#C9A84C" stroke-width="1.8" fill="none" opacity="0.75"/><line x1="22" y1="72" x2="108" y2="72" stroke="#C9A84C" stroke-width="0.8" opacity="0.35"/><line x1="22" y1="79" x2="95" y2="79" stroke="#C9A84C" stroke-width="0.8" opacity="0.3"/></svg>
+        <div class="sm-bracket tl"></div><div class="sm-bracket tr"></div><div class="sm-bracket bl"></div><div class="sm-bracket br"></div>
+      </div>
+      <p style="font-family:'EB Garamond',serif; font-size:11px; letter-spacing:0.22em; color:#C9A84C; margin:0 0 6px 0; text-transform:uppercase;">New Kingdom &middot; 1400 BC</p>
+      <h4 style="font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:#f0e6d0; margin:0 0 4px 0;">The Book of the Dead</h4>
+      <p style="font-family:'Amiri',serif; font-size:13px; color:rgba(201,168,76,0.45); margin:0;">كتاب الموتى</p>
+    </div>
+    <!-- Canopic Jars -->
+    <div class="artifact-card">
+      <div class="artifact-img" style="height:260px; background:repeating-linear-gradient(-45deg,#11100a 0,#11100a 12px,#15130e 12px,#15130e 24px); border:1px solid rgba(201,168,76,0.1); position:relative; display:flex; align-items:center; justify-content:center; margin-bottom:18px;">
+        <svg viewBox="0 0 160 108" width="148" height="100" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="20" cy="20" rx="13" ry="9" fill="#C9A84C" opacity="0.65"/><circle cx="20" cy="14" r="6" fill="#C9A84C" opacity="0.55"/><path d="M8,23 Q6,68 9,86 L31,86 Q34,68 32,23Z" fill="#C9A84C" opacity="0.45"/><line x1="8" y1="46" x2="32" y2="46" stroke="#7a5200" stroke-width="1.2"/><line x1="8" y1="60" x2="32" y2="60" stroke="#7a5200" stroke-width="1.2"/><ellipse cx="58" cy="18" rx="14" ry="10" fill="#C9A84C" opacity="0.65"/><ellipse cx="58" cy="11" rx="7" ry="8" fill="#C9A84C" opacity="0.55"/><path d="M46,22 Q44,70 47,88 L69,88 Q72,70 70,22Z" fill="#C9A84C" opacity="0.45"/><line x1="46" y1="48" x2="70" y2="48" stroke="#7a5200" stroke-width="1.2"/><line x1="46" y1="62" x2="70" y2="62" stroke="#7a5200" stroke-width="1.2"/><ellipse cx="100" cy="18" rx="14" ry="10" fill="#C9A84C" opacity="0.65"/><ellipse cx="100" cy="10" rx="8" ry="9" fill="#C9A84C" opacity="0.55"/><path d="M88,22 Q86,70 89,88 L111,88 Q114,70 112,22Z" fill="#C9A84C" opacity="0.45"/><line x1="88" y1="48" x2="112" y2="48" stroke="#7a5200" stroke-width="1.2"/><line x1="88" y1="62" x2="112" y2="62" stroke="#7a5200" stroke-width="1.2"/><ellipse cx="140" cy="20" rx="13" ry="9" fill="#C9A84C" opacity="0.65"/><path d="M134,12 Q137,4 140,2 Q143,4 146,12 Q144,16 140,16 Q136,16 134,12Z" fill="#C9A84C" opacity="0.55"/><path d="M128,23 Q126,68 129,86 L151,86 Q154,68 152,23Z" fill="#C9A84C" opacity="0.45"/><line x1="128" y1="46" x2="152" y2="46" stroke="#7a5200" stroke-width="1.2"/><line x1="128" y1="60" x2="152" y2="60" stroke="#7a5200" stroke-width="1.2"/></svg>
+        <div class="sm-bracket tl"></div><div class="sm-bracket tr"></div><div class="sm-bracket bl"></div><div class="sm-bracket br"></div>
+      </div>
+      <p style="font-family:'EB Garamond',serif; font-size:11px; letter-spacing:0.22em; color:#C9A84C; margin:0 0 6px 0; text-transform:uppercase;">Old Kingdom &middot; 2500 BC</p>
+      <h4 style="font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:#f0e6d0; margin:0 0 4px 0;">Canopic Jars</h4>
+      <p style="font-family:'Amiri',serif; font-size:13px; color:rgba(201,168,76,0.45); margin:0;">أواني القانوب</p>
+    </div>
+    <!-- Golden Ankh -->
+    <div class="artifact-card">
+      <div class="artifact-img" style="height:260px; background:repeating-linear-gradient(45deg,#120f09 0,#120f09 12px,#16120c 12px,#16120c 24px); border:1px solid rgba(201,168,76,0.1); position:relative; display:flex; align-items:center; justify-content:center; margin-bottom:18px;">
+        <svg viewBox="0 0 80 132" width="68" height="112" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="40" cy="38" rx="22" ry="28" stroke="#C9A84C" stroke-width="10" fill="none"/><rect x="35" y="62" width="10" height="5" fill="#0c0905"/><rect x="35" y="65" width="10" height="62" rx="2" fill="#C9A84C"/><rect x="8" y="68" width="64" height="10" rx="2" fill="#C9A84C"/><circle cx="8" cy="73" r="5" fill="#C9A84C" opacity="0.55"/><circle cx="72" cy="73" r="5" fill="#C9A84C" opacity="0.55"/><circle cx="40" cy="127" r="5" fill="#C9A84C" opacity="0.55"/></svg>
+        <div class="sm-bracket tl"></div><div class="sm-bracket tr"></div><div class="sm-bracket bl"></div><div class="sm-bracket br"></div>
+      </div>
+      <p style="font-family:'EB Garamond',serif; font-size:11px; letter-spacing:0.22em; color:#C9A84C; margin:0 0 6px 0; text-transform:uppercase;">Middle Kingdom &middot; 2000 BC</p>
+      <h4 style="font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:#f0e6d0; margin:0 0 4px 0;">Golden Ankh Amulet</h4>
+      <p style="font-family:'Amiri',serif; font-size:13px; color:rgba(201,168,76,0.45); margin:0;">تميمة عنخ ذهبية</p>
+    </div>
+    <!-- Scarab -->
+    <div class="artifact-card">
+      <div class="artifact-img" style="height:260px; background:repeating-linear-gradient(-45deg,#100e09 0,#100e09 12px,#14110d 12px,#14110d 24px); border:1px solid rgba(201,168,76,0.1); position:relative; display:flex; align-items:center; justify-content:center; margin-bottom:18px;">
+        <svg viewBox="0 0 140 120" width="128" height="110" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M52,62 Q36,44 14,50 Q8,62 18,76 Q32,82 52,74" fill="#C9A84C" opacity="0.5"/><line x1="16" y1="54" x2="50" y2="66" stroke="#7a5200" stroke-width="1"/><line x1="14" y1="62" x2="50" y2="70" stroke="#7a5200" stroke-width="1"/><line x1="18" y1="70" x2="50" y2="74" stroke="#7a5200" stroke-width="1"/><path d="M88,62 Q104,44 126,50 Q132,62 122,76 Q108,82 88,74" fill="#C9A84C" opacity="0.5"/><line x1="90" y1="66" x2="124" y2="54" stroke="#7a5200" stroke-width="1"/><line x1="90" y1="70" x2="126" y2="62" stroke="#7a5200" stroke-width="1"/><line x1="90" y1="74" x2="122" y2="70" stroke="#7a5200" stroke-width="1"/><ellipse cx="70" cy="68" rx="22" ry="30" fill="#C9A84C" opacity="0.75"/><ellipse cx="70" cy="39" rx="16" ry="14" fill="#C9A84C" opacity="0.72"/><line x1="50" y1="57" x2="90" y2="57" stroke="#0a0805" stroke-width="2" opacity="0.5"/><line x1="50" y1="68" x2="90" y2="68" stroke="#0a0805" stroke-width="2" opacity="0.5"/><line x1="50" y1="79" x2="90" y2="79" stroke="#0a0805" stroke-width="2" opacity="0.5"/><line x1="52" y1="88" x2="88" y2="88" stroke="#0a0805" stroke-width="2" opacity="0.5"/><path d="M63,27 Q58,17 52,11" stroke="#C9A84C" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M77,27 Q82,17 88,11" stroke="#C9A84C" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="70" cy="7" r="6" fill="#C9A84C" opacity="0.7"/><circle cx="70" cy="7" r="3" fill="#7a5200" opacity="0.8"/></svg>
+        <div class="sm-bracket tl"></div><div class="sm-bracket tr"></div><div class="sm-bracket bl"></div><div class="sm-bracket br"></div>
+      </div>
+      <p style="font-family:'EB Garamond',serif; font-size:11px; letter-spacing:0.22em; color:#C9A84C; margin:0 0 6px 0; text-transform:uppercase;">New Kingdom &middot; 1550 BC</p>
+      <h4 style="font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:#f0e6d0; margin:0 0 4px 0;">Sacred Scarab Seal</h4>
+      <p style="font-family:'Amiri',serif; font-size:13px; color:rgba(201,168,76,0.45); margin:0;">خاتم الجعران المقدس</p>
+    </div>
+  </div>
+</section>
+
+<!-- PLAN YOUR JOURNEY -->
+<section id="journey" class="rp-section" style="padding:120px 64px; background:#080604; scroll-margin-top:72px;">
+  <div style="text-align:center; margin-bottom:80px;">
+    <p style="font-family:'EB Garamond',serif; font-size:12px; letter-spacing:0.35em; color:#C9A84C; margin:0 0 16px 0; text-transform:uppercase;">&mdash; Curated Expeditions</p>
+    <h2 style="font-family:'Playfair Display',serif; font-size:clamp(52px,6vw,88px); font-weight:900; color:#f0e6d0; margin:0 0 10px 0; line-height:0.92; letter-spacing:-0.02em;">PLAN YOUR<br>JOURNEY</h2>
+    <p style="font-family:'Amiri',serif; font-size:18px; color:rgba(201,168,76,0.6); margin:0 0 28px 0;">خطط لرحلتك</p>
+    <p style="font-family:'EB Garamond',serif; font-size:18px; color:rgba(240,230,208,0.5); max-width:480px; margin:0 auto; line-height:1.8;">Choose your expedition into the land of pharaohs. Every journey is guided by expert Egyptologists.</p>
+  </div>
+  <div id="planCards" class="rp-3col" style="display:grid; grid-template-columns:repeat(3,1fr); gap:2px; margin-bottom:64px;">
+    <!-- Seeker -->
+    <div class="plan-card inactive" data-plan="0">
+      <p style="font-family:'EB Garamond',serif; font-size:11px; letter-spacing:0.28em; color:#C9A84C; margin:0 0 16px 0; text-transform:uppercase;">The Seeker &middot; الباحث</p>
+      <h3 style="font-family:'Playfair Display',serif; font-size:48px; font-weight:900; color:#f0e6d0; margin:0 0 4px 0; line-height:1;">$890</h3>
+      <p style="font-family:'EB Garamond',serif; font-size:15px; color:rgba(240,230,208,0.38); margin:0 0 36px 0;">5 Days &middot; 4 Nights</p>
+      <div style="display:flex; flex-direction:column; gap:14px; margin-bottom:36px;">
+        <div style="display:flex; align-items:center; gap:14px;"><span style="width:4px; height:4px; background:#C9A84C; border-radius:50%; flex-shrink:0;"></span><span style="font-family:'EB Garamond',serif; font-size:15px; color:rgba(240,230,208,0.62);">Giza Pyramids &amp; Sphinx</span></div>
+        <div style="display:flex; align-items:center; gap:14px;"><span style="width:4px; height:4px; background:#C9A84C; border-radius:50%; flex-shrink:0;"></span><span style="font-family:'EB Garamond',serif; font-size:15px; color:rgba(240,230,208,0.62);">Egyptian Museum, Cairo</span></div>
+        <div style="display:flex; align-items:center; gap:14px;"><span style="width:4px; height:4px; background:#C9A84C; border-radius:50%; flex-shrink:0;"></span><span style="font-family:'EB Garamond',serif; font-size:15px; color:rgba(240,230,208,0.62);">Saqqara Step Pyramid</span></div>
+        <div style="display:flex; align-items:center; gap:14px;"><span style="width:4px; height:4px; background:#C9A84C; border-radius:50%; flex-shrink:0;"></span><span style="font-family:'EB Garamond',serif; font-size:15px; color:rgba(240,230,208,0.62);">Memphis Ancient City</span></div>
+      </div>
+      <div style="display:flex; justify-content:center;">
+        <a href="#" class="papyrus-btn" style="filter:drop-shadow(0 2px 8px rgba(0,0,0,0.5));">
+          <div class="papyrus-end-l"></div>
+          <div class="papyrus-mid" style="padding:14px 36px;"><span style="font-size:14px; letter-spacing:0.16em;">Select Journey &rarr;</span></div>
+          <div class="papyrus-end-r"></div>
+        </a>
+      </div>
+    </div>
+    <!-- Explorer -->
+    <div class="plan-card active" data-plan="1" style="position:relative;">
+      <div style="position:absolute; top:0; left:50%; transform:translateX(-50%); background:#C9A84C; padding:5px 22px;">
+        <span style="font-family:'EB Garamond',serif; font-size:10px; letter-spacing:0.22em; color:#0a0805; font-weight:700; text-transform:uppercase;">Most Popular</span>
+      </div>
+      <p style="font-family:'EB Garamond',serif; font-size:11px; letter-spacing:0.28em; color:#C9A84C; margin:0 0 16px 0; text-transform:uppercase;">The Explorer &middot; المستكشف</p>
+      <h3 style="font-family:'Playfair Display',serif; font-size:48px; font-weight:900; color:#f0e6d0; margin:0 0 4px 0; line-height:1;">$1,650</h3>
+      <p style="font-family:'EB Garamond',serif; font-size:15px; color:rgba(240,230,208,0.38); margin:0 0 36px 0;">10 Days &middot; 9 Nights</p>
+      <div style="display:flex; flex-direction:column; gap:14px; margin-bottom:36px;">
+        <div style="display:flex; align-items:center; gap:14px;"><span style="width:4px; height:4px; background:#C9A84C; border-radius:50%; flex-shrink:0;"></span><span style="font-family:'EB Garamond',serif; font-size:15px; color:rgba(240,230,208,0.62);">All Seeker Sites</span></div>
+        <div style="display:flex; align-items:center; gap:14px;"><span style="width:4px; height:4px; background:#C9A84C; border-radius:50%; flex-shrink:0;"></span><span style="font-family:'EB Garamond',serif; font-size:15px; color:rgba(240,230,208,0.62);">Karnak &amp; Luxor Temples</span></div>
+        <div style="display:flex; align-items:center; gap:14px;"><span style="width:4px; height:4px; background:#C9A84C; border-radius:50%; flex-shrink:0;"></span><span style="font-family:'EB Garamond',serif; font-size:15px; color:rgba(240,230,208,0.62);">Valley of the Kings</span></div>
+        <div style="display:flex; align-items:center; gap:14px;"><span style="width:4px; height:4px; background:#C9A84C; border-radius:50%; flex-shrink:0;"></span><span style="font-family:'EB Garamond',serif; font-size:15px; color:rgba(240,230,208,0.62);">Abu Simbel &amp; Philae Temple</span></div>
+      </div>
+      <div style="display:flex; justify-content:center;">
+        <a href="#" class="papyrus-btn explorer" style="filter:drop-shadow(0 3px 12px rgba(0,0,0,0.65));">
+          <div class="papyrus-end-l"></div>
+          <div class="papyrus-mid"><span>Get a Ticket &rarr;</span></div>
+          <div class="papyrus-end-r"></div>
+        </a>
+      </div>
+    </div>
+    <!-- Pharaoh -->
+    <div class="plan-card inactive" data-plan="2">
+      <p style="font-family:'EB Garamond',serif; font-size:11px; letter-spacing:0.28em; color:#C9A84C; margin:0 0 16px 0; text-transform:uppercase;">The Pharaoh &middot; الفرعون</p>
+      <h3 style="font-family:'Playfair Display',serif; font-size:48px; font-weight:900; color:#f0e6d0; margin:0 0 4px 0; line-height:1;">$2,890</h3>
+      <p style="font-family:'EB Garamond',serif; font-size:15px; color:rgba(240,230,208,0.38); margin:0 0 36px 0;">15 Days &middot; 14 Nights</p>
+      <div style="display:flex; flex-direction:column; gap:14px; margin-bottom:36px;">
+        <div style="display:flex; align-items:center; gap:14px;"><span style="width:4px; height:4px; background:#C9A84C; border-radius:50%; flex-shrink:0;"></span><span style="font-family:'EB Garamond',serif; font-size:15px; color:rgba(240,230,208,0.62);">All Explorer Sites</span></div>
+        <div style="display:flex; align-items:center; gap:14px;"><span style="width:4px; height:4px; background:#C9A84C; border-radius:50%; flex-shrink:0;"></span><span style="font-family:'EB Garamond',serif; font-size:15px; color:rgba(240,230,208,0.62);">Dendera &amp; Edfu Temples</span></div>
+        <div style="display:flex; align-items:center; gap:14px;"><span style="width:4px; height:4px; background:#C9A84C; border-radius:50%; flex-shrink:0;"></span><span style="font-family:'EB Garamond',serif; font-size:15px; color:rgba(240,230,208,0.62);">Private Nile Cruise &middot; Aswan</span></div>
+        <div style="display:flex; align-items:center; gap:14px;"><span style="width:4px; height:4px; background:#C9A84C; border-radius:50%; flex-shrink:0;"></span><span style="font-family:'EB Garamond',serif; font-size:15px; color:rgba(240,230,208,0.62);">Nubian Village Experience</span></div>
+      </div>
+      <div style="display:flex; justify-content:center;">
+        <a href="#" class="papyrus-btn" style="filter:drop-shadow(0 2px 8px rgba(0,0,0,0.5));">
+          <div class="papyrus-end-l"></div>
+          <div class="papyrus-mid" style="padding:14px 36px;"><span style="font-size:14px; letter-spacing:0.16em;">Select Journey &rarr;</span></div>
+          <div class="papyrus-end-r"></div>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div style="text-align:center; border-top:1px solid rgba(201,168,76,0.1); padding-top:48px;">
+    <p style="font-family:'EB Garamond',serif; font-size:16px; color:rgba(240,230,208,0.38); margin:0 0 8px 0;">All journeys include expert Egyptologist guides, luxury accommodations, and private dawn site access.</p>
+    <p style="font-family:'Amiri',serif; font-size:15px; color:rgba(201,168,76,0.38); margin:0; direction:rtl;">جميع الرحلات تشمل مرشدين من علماء المصريات وإقامة فاخرة ووصول خاص إلى المواقع عند الفجر</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background:#050402; padding:80px 64px 40px 64px; border-top:1px solid rgba(201,168,76,0.12);">
+  <div class="rp-4col" style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:64px; margin-bottom:72px;">
+    <div class="rp-footer-brand">
+      <div style="margin-bottom:20px;">
+        <div style="font-family:'Playfair Display',serif; font-size:20px; font-weight:800; color:#C9A84C; margin-bottom:4px;">The Rise of Pharaohs</div>
+        <div style="font-family:'Amiri',serif; font-size:14px; color:rgba(201,168,76,0.45); direction:rtl;">صعود الفراعنة</div>
+      </div>
+      <p style="font-family:'EB Garamond',serif; font-size:15px; color:rgba(240,230,208,0.38); line-height:1.85; margin:0 0 28px 0; max-width:280px;">Curating extraordinary archaeological tourism experiences through the timeless wonders of ancient Egypt.</p>
+      <div style="display:flex; gap:18px;">
+        <a href="#" class="footer-social"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+        <a href="#" class="footer-social"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+        <a href="#" class="footer-social"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.41 19.1C5.12 19.56 12 19.56 12 19.56s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="currentColor" stroke="none"/></svg></a>
+      </div>
+    </div>
+    <div>
+      <h4 style="font-family:'EB Garamond',serif; font-size:11px; letter-spacing:0.28em; color:#C9A84C; margin:0 0 24px 0; text-transform:uppercase;">Explore</h4>
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <a href="#temples" class="footer-link">Temples</a>
+        <a href="#pyramids" class="footer-link">Pyramids</a>
+        <a href="#rituals" class="footer-link">Rituals</a>
+        <a href="#artifacts" class="footer-link">Artifacts</a>
+      </div>
+    </div>
+    <div>
+      <h4 style="font-family:'EB Garamond',serif; font-size:11px; letter-spacing:0.28em; color:#C9A84C; margin:0 0 24px 0; text-transform:uppercase;">Journeys</h4>
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <a href="#journey" class="footer-link">The Seeker</a>
+        <a href="#journey" class="footer-link">The Explorer</a>
+        <a href="#journey" class="footer-link">The Pharaoh</a>
+        <a href="#journey" class="footer-link">Custom Tour</a>
+      </div>
+    </div>
+    <div>
+      <h4 style="font-family:'EB Garamond',serif; font-size:11px; letter-spacing:0.28em; color:#C9A84C; margin:0 0 24px 0; text-transform:uppercase;">Contact</h4>
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <span style="font-family:'EB Garamond',serif; font-size:15px; color:rgba(240,230,208,0.4);">Cairo, Egypt</span>
+        <span style="font-family:'EB Garamond',serif; font-size:15px; color:rgba(240,230,208,0.4);">info@riseofpharaohs.com</span>
+        <span style="font-family:'EB Garamond',serif; font-size:15px; color:rgba(240,230,208,0.4);">+20 2 1234 5678</span>
+        <span style="font-family:'Amiri',serif; font-size:15px; color:rgba(201,168,76,0.4); direction:rtl;">القاهرة، مصر</span>
+      </div>
+    </div>
+  </div>
+  <div class="rp-footer-bottom" style="border-top:1px solid rgba(201,168,76,0.08); padding-top:32px; display:flex; justify-content:space-between; align-items:center;">
+    <p style="font-family:'EB Garamond',serif; font-size:13px; color:rgba(240,230,208,0.22); margin:0;">&copy; 2025 The Rise of Pharaohs. All rights reserved.</p>
+    <p style="font-family:'Amiri',serif; font-size:13px; color:rgba(240,230,208,0.22); margin:0; direction:rtl;">&copy; ٢٠٢٥ صعود الفراعنة. جميع الحقوق محفوظة.</p>
+  </div>
+</footer>
+
+<script>
+// Nav scroll
+window.addEventListener('scroll', function() {
+  document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 60);
+}, { passive: true });
+
+// Mobile menu
+var menu = document.getElementById('mobileMenu');
+document.getElementById('hamburgerBtn').addEventListener('click', function() { menu.classList.add('open'); });
+document.getElementById('closeMenuBtn').addEventListener('click', function() { menu.classList.remove('open'); });
+menu.querySelectorAll('.mobile-menu-link').forEach(function(l) {
+  l.addEventListener('click', function() { menu.classList.remove('open'); });
+});
+
+// Plan cards
+document.getElementById('planCards').addEventListener('click', function(e) {
+  var card = e.target.closest('.plan-card');
+  if (!card) return;
+  this.querySelectorAll('.plan-card').forEach(function(c) {
+    c.classList.remove('active');
+    c.classList.add('inactive');
+  });
+  card.classList.remove('inactive');
+  card.classList.add('active');
+});
+
+// Ritual accordion
+document.getElementById('ritualAccordion').addEventListener('click', function(e) {
+  var item = e.target.closest('.ritual-item');
+  if (!item) return;
+  this.querySelectorAll('.ritual-item').forEach(function(r) {
+    r.classList.remove('active');
+    r.classList.add('inactive');
+    r.querySelector('.ritual-arrow').innerHTML = '+';
+    r.querySelector('.ritual-num').style.color = 'rgba(201,168,76,0.38)';
+    r.querySelector('.ritual-title').style.color = 'rgba(240,230,208,0.52)';
+    r.querySelector('.flame-outer').setAttribute('fill', 'rgba(201,168,76,0.22)');
+    r.querySelector('.flame-inner').setAttribute('fill', 'rgba(201,168,76,0.1)');
+  });
+  item.classList.remove('inactive');
+  item.classList.add('active');
+  item.querySelector('.ritual-arrow').innerHTML = '−';
+  item.querySelector('.ritual-num').style.color = '#C9A84C';
+  item.querySelector('.ritual-title').style.color = '#f0e6d0';
+  item.querySelector('.flame-outer').setAttribute('fill', '#ff7700');
+  item.querySelector('.flame-inner').setAttribute('fill', '#ffee00');
+});
+
+// Force-mute all videos
+document.querySelectorAll('video').forEach(function(v) { v.muted = true; v.volume = 0; });
+
+// Hero video ping-pong loop
+(function() {
+  var video = document.getElementById('hero-video');
+  if (!video) return;
+  var rafId = null;
+  video.addEventListener('ended', function startReverse() {
+    var dur = video.duration;
+    var wallStart = performance.now();
+    function step(now) {
+      var elapsed = (now - wallStart) / 1000;
+      var t = dur - elapsed;
+      if (t <= 0) { video.currentTime = 0; video.play(); return; }
+      video.currentTime = t;
+      rafId = requestAnimationFrame(step);
+    }
+    rafId = requestAnimationFrame(step);
+  });
+})();
+</script>
+</body>
+</html>
