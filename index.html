@@ -69,8 +69,11 @@ a { color: inherit; }
 .mobile-menu-link { font-family:'Playfair Display',serif; font-size:clamp(28px,7vw,52px); font-weight:900; color:rgba(240,230,208,0.88); text-decoration:none; padding:20px 48px; border-bottom:1px solid rgba(201,168,76,0.07); display:flex; justify-content:space-between; align-items:center; transition:background 0.2s, color 0.2s; }
 .mobile-menu-link:hover { background:rgba(201,168,76,0.04); color:#C9A84C; }
 
+/* Hero wrapper for scroll-driven video */
+.rp-hero-wrapper { height:300vh; position:relative; }
 /* Hero */
-.rp-hero { height:100vh; max-height:100vh; padding-top:72px; background:#0a0805; display:grid; grid-template-columns:1fr 36% 1fr; position:relative; overflow:hidden; }
+.rp-hero { height:100vh; max-height:100vh; padding-top:72px; background:#0a0805; display:grid; grid-template-columns:1fr 36% 1fr; position:sticky; top:0; overflow:hidden; }
+.hero-word { display:inline-block; transition:opacity 0.15s ease, transform 0.25s ease; }
 .rp-hero-left { padding:88px 40px 72px 64px; display:flex; flex-direction:column; justify-content:space-between; position:relative; z-index:2; }
 .rp-hero-right { padding:88px 64px 72px 40px; display:flex; flex-direction:column; justify-content:space-around; position:relative; z-index:2; }
 
@@ -128,6 +131,7 @@ a { color: inherit; }
   .rp-nav { padding:0 24px !important; }
   .rp-nav-links, .rp-nav-cta { display:none !important; }
   .rp-hamburger { display:flex !important; }
+  .rp-hero-wrapper { height:250vh !important; }
   .rp-hero { grid-template-columns:1fr !important; }
   .rp-hero-mid, .rp-hero-right { display:none !important; }
   .rp-hero-left { padding:48px 28px 64px !important; }
@@ -210,8 +214,9 @@ a { color: inherit; }
 </div>
 
 <!-- HERO -->
+<div class="rp-hero-wrapper" id="heroWrapper">
 <section class="rp-hero">
-  <video id="hero-video" autoplay muted playsinline style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0;">
+  <video id="hero-video" muted playsinline preload="auto" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0;">
     <source src="project/uploads/kling_20260622_VIDEO_i_want_to__924_0.mp4" type="video/mp4">
   </video>
   <div style="position:absolute; inset:0; background:linear-gradient(160deg, rgba(8,5,2,0.78) 0%, rgba(8,5,2,0.55) 45%, rgba(8,5,2,0.78) 100%); pointer-events:none; z-index:1;"></div>
@@ -244,6 +249,7 @@ a { color: inherit; }
     </div>
   </div>
 </section>
+</div>
 
 <!-- GOLD TICKER -->
 <div style="background:#C9A84C; height:50px; overflow:hidden; display:flex; align-items:center;">
@@ -738,23 +744,85 @@ document.getElementById('ritualAccordion').addEventListener('click', function(e)
 // Force-mute all videos
 document.querySelectorAll('video').forEach(function(v) { v.muted = true; v.volume = 0; });
 
-// Hero video ping-pong loop
+// Scroll-driven hero video + word-by-word text fade
 (function() {
+  var wrapper = document.getElementById('heroWrapper');
   var video = document.getElementById('hero-video');
-  if (!video) return;
-  var rafId = null;
-  video.addEventListener('ended', function startReverse() {
-    var dur = video.duration;
-    var wallStart = performance.now();
-    function step(now) {
-      var elapsed = (now - wallStart) / 1000;
-      var t = dur - elapsed;
-      if (t <= 0) { video.currentTime = 0; video.play(); return; }
-      video.currentTime = t;
-      rafId = requestAnimationFrame(step);
+  if (!wrapper || !video) return;
+
+  video.pause();
+
+  var heroLeft = wrapper.querySelector('.rp-hero-left');
+  var heroRight = wrapper.querySelector('.rp-hero-right');
+  var allWords = [];
+
+  function splitIntoWords(el) {
+    var nodes = Array.prototype.slice.call(el.childNodes);
+    nodes.forEach(function(node) {
+      if (node.nodeType === 3) {
+        var text = node.textContent;
+        var parts = text.split(/(\s+)/);
+        var frag = document.createDocumentFragment();
+        parts.forEach(function(part) {
+          if (part.trim()) {
+            var span = document.createElement('span');
+            span.className = 'hero-word';
+            span.textContent = part;
+            frag.appendChild(span);
+            allWords.push(span);
+          } else if (part) {
+            frag.appendChild(document.createTextNode(part));
+          }
+        });
+        node.parentNode.replaceChild(frag, node);
+      } else if (node.nodeType === 1 && node.tagName !== 'A' && node.tagName !== 'BR') {
+        splitIntoWords(node);
+      }
+    });
+  }
+
+  if (heroLeft) {
+    heroLeft.querySelectorAll('.rp-hero-eyebrow, .rp-hero-title, .rp-hero-arabic, .rp-hero-subtitle').forEach(splitIntoWords);
+    var heroBtn = heroLeft.querySelector('.cartouche-btn');
+    if (heroBtn) { heroBtn.classList.add('hero-word'); allWords.push(heroBtn); }
+  }
+  if (heroRight) {
+    heroRight.querySelectorAll('div[style*="font-family"], p').forEach(splitIntoWords);
+  }
+
+  var ticking = false;
+  window.addEventListener('scroll', function() {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(function() {
+        var rect = wrapper.getBoundingClientRect();
+        var scrollable = wrapper.offsetHeight - window.innerHeight;
+        var progress = Math.max(0, Math.min(1, -rect.top / scrollable));
+
+        if (video.duration) {
+          video.currentTime = progress * video.duration;
+        }
+
+        var fadeStart = 0.45;
+        var fadeEnd = 0.92;
+        var fadeProgress = Math.max(0, Math.min(1, (progress - fadeStart) / (fadeEnd - fadeStart)));
+        var total = allWords.length;
+
+        for (var i = 0; i < total; i++) {
+          var threshold = i / total;
+          if (fadeProgress > threshold) {
+            var wordFade = Math.min(1, (fadeProgress - threshold) * total * 0.35);
+            allWords[i].style.opacity = 1 - wordFade;
+            allWords[i].style.transform = 'translateY(' + (wordFade * -18) + 'px)';
+          } else {
+            allWords[i].style.opacity = '1';
+            allWords[i].style.transform = 'translateY(0)';
+          }
+        }
+        ticking = false;
+      });
     }
-    rafId = requestAnimationFrame(step);
-  });
+  }, { passive: true });
 })();
 </script>
 </body>
